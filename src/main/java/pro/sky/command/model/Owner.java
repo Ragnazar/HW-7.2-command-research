@@ -16,8 +16,7 @@ import org.hibernate.type.SqlTypes;
 @ToString
 public class Owner {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     @JdbcTypeCode(SqlTypes.BIGINT)
     private Long id;
 
