@@ -23,9 +23,10 @@ public class KeyboardMakerService {
     }
 
     public List<List<InlineKeyboardButton>> shelterKeyboard() {
-        return Arrays.asList(Arrays.asList(getButton(SHELTER_INFO)),
+        return Arrays.asList(Arrays.asList(getButton(INFO)),
                 Arrays.asList(getButton(TAKE_PET)),
-                Arrays.asList(getButton(PET_REPORT)));
+                Arrays.asList(getButton(PET_REPORT)),
+                Arrays.asList(getButton(CALL_VOLUNTEER)));
 
     }
 
@@ -39,8 +40,26 @@ public class KeyboardMakerService {
         if (buttonModService.checkButtonPress(chatId, DOG_SHELTER)) {
             rows.add(Arrays.asList(getButton(DOG_HANDLERS)));
         }
+        rows.add(Arrays.asList(getButton(CALL_VOLUNTEER)));
         return rows;
     }
+    public List<List<InlineKeyboardButton>> infoKeyboard() {
+
+    return  Arrays.asList(Arrays.asList(getButton(SHELTER_INFO)),
+                Arrays.asList(getButton(SHELTER_DATA)),
+                Arrays.asList(getButton(TAKE_PASS)),
+                Arrays.asList(getButton(RULES_SAFETY)),
+                Arrays.asList(getButton(TAKE_DATA_FOR_CONTACT)),
+                Arrays.asList(getButton(CALL_VOLUNTEER)));
+    }
+
+    public List<List<InlineKeyboardButton>> settleKeyboard() {
+    return   Arrays.asList(Arrays.asList(getButton(LITTLE_PET)),
+            Arrays.asList(getButton(BIG_PET)),
+            Arrays.asList(getButton(DISABILITY_PET)),
+            Arrays.asList(getButton(CALL_VOLUNTEER)));
+    }
+
 
     InlineKeyboardButton getButton(BotMessageEnum buttonName) {
         return InlineKeyboardButton.builder().text(buttonName.getNameButton()).callbackData(buttonName.name()).build();
