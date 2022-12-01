@@ -29,7 +29,7 @@ public class TelegramBotInitializer {
         } catch (TelegramApiRequestException e) {
             log.error("Соединение неваозможно. Пауза " + RECONNECT_PAUSE / 1000 + "сек до новой попытки. Error: " + e.getMessage());
             try {
-                log.debug("вызван блок паузы между побытками создать бота");
+                log.debug("вызван блок паузы между попытками создать бота");
                 Thread.sleep(RECONNECT_PAUSE);
             } catch (InterruptedException e1) {
                 log.error("возникла ошибка при отправлении/пробуждении потока на паузу");
