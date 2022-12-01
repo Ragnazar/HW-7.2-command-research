@@ -16,7 +16,7 @@ import org.hibernate.type.SqlTypes;
 @ToString
 public class Owner {
     @Id
-    @Column(name = "id")
+    @Column(name = "chat_id")
     @JdbcTypeCode(SqlTypes.BIGINT)
     private Long id;
 
