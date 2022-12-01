@@ -7,22 +7,25 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
-@Table(name = "dogs")
+@Table(name = "pets")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class Dog {
+public class Pet {
     @Id
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.BIGINT)
-    @Column(name = "dog_id")
+    @Column(name = "id")
     @NotBlank
-    private Long dogId;
-    @Column(name = "name_dog")
+    private Long id;
+    @Column(name = "name_pet")
     @NotBlank
-    private String nameDog;
+    private String namePet;
     @JoinColumn(name = "owner_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(optional = false, mappedBy = "pet")
     private Owner owner;
+    @NotBlank
+    @Column(name ="kind")
+    private String kindOfAnimal;
 }

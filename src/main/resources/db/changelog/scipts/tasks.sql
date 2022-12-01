@@ -6,11 +6,12 @@ CREATE TABLE owner (
                                    chat_id           TEXT,
                                    name              TEXT,
                                    phone_number      TEXT,
-                                   pets            BIGINT
+                                   pet               BIGINT
 );
 -- changeset dlukin:2
-CREATE TABLE dogs (
-    dog_id           SERIAL,
-    name_dog         TEXT,
-    owner_id       	BIGINT
+CREATE TABLE pets (
+    id           SERIAL,
+    name_pet         TEXT,
+    owner_id       	BIGINT,
+    kind            TEXT
 );

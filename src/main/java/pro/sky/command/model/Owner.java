@@ -37,7 +37,7 @@ public class Owner {
     private String phoneNumber;
 
     @NotBlank
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
-    @Column(name = "dog_id")
-    private List <Dog> dogs;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "pet_id", unique = true, nullable = false, updatable = false)
+    private Pet pet;
 }
