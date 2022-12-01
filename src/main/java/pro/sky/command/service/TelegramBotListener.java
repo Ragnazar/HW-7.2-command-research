@@ -1,4 +1,5 @@
 package pro.sky.command.service;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -16,6 +17,7 @@ import pro.sky.command.service.handler.HandlerCommand;
 @Slf4j
 public class TelegramBotListener extends TelegramLongPollingBot {
 
+
     private final TelegramBotConfiguration configuration;
     private final HandlerCallbackQuery callbackQuery;
     private final HandlerCommand handlerCommand;
@@ -24,16 +26,19 @@ public class TelegramBotListener extends TelegramLongPollingBot {
         this.configuration = configuration;
         this.callbackQuery = callbackQuery;
         this.handlerCommand = handlerCommand;
+
     }
 
     @Override
     public String getBotUsername() {
         return configuration.getBotName();
     }
+
     @Override
     public String getBotToken() {
         return configuration.getToken();
     }
+
     @Override
     public void onUpdateReceived(Update update) {
         log.debug("вызван блок для получения всех входящих сообщений");
