@@ -6,6 +6,8 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.List;
+
 
 @Entity
 @Table(name = "owner")
@@ -35,7 +37,7 @@ public class Owner {
     private String phoneNumber;
 
     @NotBlank
-    @Column(name = "pet_id")
-    private Long petId;
-
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+    @Column(name = "dog_id")
+    private List <Dog> dogs;
 }
