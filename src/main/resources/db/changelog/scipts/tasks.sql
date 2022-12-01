@@ -2,7 +2,8 @@
 
 -- changeset iavdeyev:1
 CREATE TABLE owner (
-                                   chat_id           BIGINT,
+                                   id                SERIAL,
+                                   chat_id           TEXT,
                                    name              TEXT,
                                    phone_number      TEXT,
                                    pet_id            BIGINT
