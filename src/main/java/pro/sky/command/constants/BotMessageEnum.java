@@ -1,7 +1,7 @@
 package pro.sky.command.constants;
 
-
 public enum BotMessageEnum {
+
     //ответы на команды с клавиатуры
     HELP_MESSAGE("\n  Я бот Приюта для животных. Я расскажу Вам о приюте " +
             "или помогу связаться с волонтерами.\n\n" +
@@ -54,19 +54,21 @@ public enum BotMessageEnum {
     //добавить кнопки первичное обращение и для потоянного наблюления
     REASONS_REFUSAL("Здесь какие то причины отказа", "Причины Отказа");
 
+
     private final String message;
+
     private final String nameButton;
 
     BotMessageEnum(String message, String name) {
         this.message = message;
         this.nameButton = name;
+    }
 
     public String getMessage() {
         return message;
     }
 
     public String getNameButton() {
-
         return nameButton;
     }
 }
