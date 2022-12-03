@@ -28,4 +28,7 @@ public class Pet {
     @NotBlank
     @Column(name ="kind")
     private String kindOfAnimal;
+    @NotBlank
+    @Column(name = "report_id")
+    private Long report_id;
 }
