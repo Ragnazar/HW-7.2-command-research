@@ -53,4 +53,5 @@ public class Report {
     @Column(name = "behavior_changes")
     private String behaviorChanges;
 
+
 }

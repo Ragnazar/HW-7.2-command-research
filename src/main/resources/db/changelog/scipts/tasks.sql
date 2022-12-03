@@ -19,7 +19,6 @@ CREATE TABLE pets (
 -- changeset iavdeyev:3
 CREATE TABLE report (
                        id                SERIAL,
-                       pet_id            BIGINT,
                        recording_date    TIMESTAMP,
                        photo             BYTEA,
                        diet              TEXT,
