@@ -19,9 +19,6 @@ public class Report {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotBlank
-    @Column(name = "pet_id")
-    private Long petId;
 
     @NotBlank
     @CreatedDate
@@ -49,5 +46,6 @@ public class Report {
 
     @Column(name = "behavior_changes")
     private String behaviorChanges;
+
 
 }
