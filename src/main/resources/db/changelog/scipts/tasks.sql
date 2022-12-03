@@ -13,5 +13,6 @@ CREATE TABLE pets (
     id           SERIAL,
     name_pet         TEXT,
     owner_id       	BIGINT,
-    kind            TEXT
+    kind            TEXT,
+    report_id       BIGINT
 );
