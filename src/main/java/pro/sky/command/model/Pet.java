@@ -39,4 +39,5 @@ public class Pet {
     @OneToOne(optional = false)
     @JoinColumn(name = "report_id", unique = true, nullable = false, updatable = false)
     private Report report;
+
 }
