@@ -36,8 +36,8 @@ public class Pet {
     private String kindOfAnimal;
 
     @NotBlank
-    @OneToOne(optional = false)
-    @JoinColumn(name = "report_id", unique = true, nullable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "report_ids", unique = true, nullable = false, updatable = false)
     private Report report;
 
 }
