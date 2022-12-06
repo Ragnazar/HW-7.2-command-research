@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import pro.sky.command.configuration.TelegramBotConfiguration;
 import pro.sky.command.service.handler.HandlerCallbackQuery;
 import pro.sky.command.service.handler.HandlerCommand;
+import pro.sky.command.service.impl.TelegramBotAddPhoto;
 
 
 @Component
@@ -22,11 +23,13 @@ public class TelegramBotListener extends TelegramLongPollingBot {
     private final HandlerCallbackQuery callbackQuery;
     private final HandlerCommand handlerCommand;
 
-    public TelegramBotListener(TelegramBotConfiguration configuration, HandlerCallbackQuery callbackQuery, HandlerCommand handlerCommand) {
+    private final TelegramBotAddPhoto addPhoto;
+
+    public TelegramBotListener(TelegramBotConfiguration configuration, HandlerCallbackQuery callbackQuery, HandlerCommand handlerCommand, TelegramBotAddPhoto addPhoto) {
         this.configuration = configuration;
         this.callbackQuery = callbackQuery;
         this.handlerCommand = handlerCommand;
-
+        this.addPhoto = addPhoto;
     }
 
     @Override
@@ -46,6 +49,9 @@ public class TelegramBotListener extends TelegramLongPollingBot {
             Message message = update.getMessage();
             if (message.hasText() && message.hasEntities()) {
                executeMessage(handlerCommand.handleMessage(message));
+            }
+            if (message.hasPhoto()){
+                addPhoto.AddPhoto(message);
             }
 //вставить обработчик сообщений
         } else if (update.hasCallbackQuery()) {
