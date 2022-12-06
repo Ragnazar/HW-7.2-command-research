@@ -2,7 +2,10 @@ package pro.sky.command.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -17,18 +20,24 @@ public class Pet {
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.BIGINT)
     @Column(name = "id")
+
     @NotBlank
     private Long id;
     @Column(name = "name_pet")
+
     @NotBlank
     private String namePet;
     @JoinColumn(name = "owner_id")
     @OneToOne(optional = false, mappedBy = "pet")
     private Owner owner;
+
     @NotBlank
-    @Column(name ="kind")
+    @Column(name = "kind")
     private String kindOfAnimal;
+
     @NotBlank
-    @Column(name = "report_id")
-    private Long report_id;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "report_id", unique = true, nullable = false, updatable = false)
+    private Report report;
+
 }
