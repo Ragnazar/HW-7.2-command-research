@@ -16,25 +16,30 @@ import org.hibernate.type.SqlTypes;
 @ToString
 @NoArgsConstructor
 public class Pet {
+    /**
+     * Поле идентификатор питомца
+     */
     @Id
     @GeneratedValue
     @JdbcTypeCode(SqlTypes.BIGINT)
     @Column(name = "id")
-
     @NotBlank
     private Long id;
+    /**
+     * Поле имя питомца
+     */
     @Column(name = "name_pet")
-
     @NotBlank
     private String namePet;
+    /** Поле идентификатор принадлежности к определенному владельцу */
     @JoinColumn(name = "owner_id")
     @OneToOne(optional = false, mappedBy = "pet")
     private Owner owner;
-
+    /** Поле вид питомца (кошка, собака) */
     @NotBlank
     @Column(name = "kind")
     private String kindOfAnimal;
-
+    /** Поле идентификатор идентификатор отчета о питомце из таблицы report */
     @NotBlank
     @OneToOne(optional = false)
     @JoinColumn(name = "report_id", unique = true, nullable = false, updatable = false)
