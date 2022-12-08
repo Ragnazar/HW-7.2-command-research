@@ -4,16 +4,35 @@
 
 CREATE TABLE Owner
 (
-    chatId        VARCHAR(255) NOT NULL,
-    name          VARCHAR(255) NOT NULL,
-    phone_number  VARCHAR(255),
-    shelterButton VARCHAR(255),
-    volunteerChat BOOLEAN      NOT NULL,
+    chatId        TEXT NOT NULL,
+    name          TEXT NOT NULL,
+    phone_number  TEXT,
+    shelterButton TEXT,
+    volunteerChat BOOLEAN NOT NULL,
     pet_id        BIGINT,
     CONSTRAINT pk_owner PRIMARY KEY (chatId)
 );
 
--- changeset NataliShilova:1
+-- changeset dlukin:2
+CREATE TABLE pets (
+    id           SERIAL,
+    name_pet         TEXT,
+    owner_id       	BIGINT,
+    kind            TEXT,
+    report_id       BIGINT
+);
+
+-- changeset iavdeyev:3
+CREATE TABLE report (
+                       id                SERIAL,
+                       recording_date    TIMESTAMP,
+                       photo             BYTEA,
+                       diet              TEXT,
+                       state_of_health   TEXT,
+                       behavior_changes  TEXT
+                       
+);
+-- changeset NataliShilova:4
 CREATE TABLE Notification
 (
     id        BIGINT  NOT NULL,

@@ -8,10 +8,12 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 public class Owner {
+    /** Поле идентификатор владельца */
     @Id
     @Column(nullable = false)
     private String chatId;
 
+    /** Поле имя владельца */
     @NotBlank
     @Column(nullable = false)
     private String name;
