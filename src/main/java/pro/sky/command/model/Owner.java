@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -24,9 +26,9 @@ public class Owner {
     private String shelterButton;
 
     private boolean volunteerChat;
-
-    @Column(name = "pet_id")
-    private Long petId;
+@OneToMany(mappedBy="owner")
+    @Column(name = "pets_id")
+    private List<Pet> pets;
 
     public Owner(Long chatId, String name) {
         this.chatId = chatId.toString();
