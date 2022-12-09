@@ -12,31 +12,24 @@ import static pro.sky.command.constants.BotMessageEnum.*;
 
 @Service
 public class KeyboardMakerService {
-    private final ButtonModService buttonModService;
+    private final CheckedService checkedService;
 
-    public KeyboardMakerService(ButtonModService buttonModService) {
-        this.buttonModService = buttonModService;
+    public KeyboardMakerService(CheckedService checkedService) {
+        this.checkedService = checkedService;
     }
 
     public List<List<InlineKeyboardButton>> startKeyboard() {
-
-        InlineKeyboardButton cat = InlineKeyboardButton.builder().text(CAT_SHELTER.getNameButton()).callbackData(CAT_SHELTER.name()).switchInlineQueryCurrentChat("-859148741").build();
-        return Arrays.asList(Arrays.asList(cat, getButton(DOG_SHELTER)),
-                Arrays.asList(getButton(CALL_VOLUNTEER)));
+        return Arrays.asList(Arrays.asList(getButton(CAT_SHELTER), getButton(DOG_SHELTER)));
     }
 
     public List<List<InlineKeyboardButton>> startKeyboardForRegistered() {
-        return Arrays.asList(Arrays.asList(getButton(PET_REPORT)),
-                Arrays.asList(getButton(CALL_VOLUNTEER)),
-                Arrays.asList(getButton(START)));
+        return Arrays.asList(Arrays.asList(getButton(PET_REPORT)));
     }
 
     public List<List<InlineKeyboardButton>> shelterKeyboard() {
         return Arrays.asList(Arrays.asList(getButton(INFO)),
                 Arrays.asList(getButton(TAKE_PET)),
-                Arrays.asList(getButton(PET_REPORT)),
-                Arrays.asList(getButton(CALL_VOLUNTEER)),
-                Arrays.asList(getButton(START)));
+                Arrays.asList(getButton(PET_REPORT)));
 
     }
 
@@ -48,11 +41,9 @@ public class KeyboardMakerService {
         rows.add(Arrays.asList(getButton(TRANSPORTATION)));
         rows.add(Arrays.asList(getButton(SETTLE)));
 
-      if (buttonModService.checkShelterPress(chatId, DOG_SHELTER)) {
-           rows.add(Arrays.asList(getButton(DOG_HANDLERS)));
-       }
-        rows.add(Arrays.asList(getButton(CALL_VOLUNTEER)));
-        rows.add(Arrays.asList(getButton(START)));
+        if (checkedService.checkShelterPress(chatId).equals(DOG_SHELTER.name())) {
+            rows.add(Arrays.asList(getButton(DOG_HANDLERS)));
+        }
         return rows;
     }
 
@@ -62,17 +53,13 @@ public class KeyboardMakerService {
                 Arrays.asList(getButton(SHELTER_DATA)),
                 Arrays.asList(getButton(TAKE_PASS)),
                 Arrays.asList(getButton(RULES_SAFETY)),
-                Arrays.asList(getButton(TAKE_DATA_FOR_CONTACT)),
-                Arrays.asList(getButton(CALL_VOLUNTEER)),
-                Arrays.asList(getButton(START)));
+                Arrays.asList(getButton(TAKE_DATA_FOR_CONTACT)));
     }
 
     public List<List<InlineKeyboardButton>> settleKeyboard() {
         return Arrays.asList(Arrays.asList(getButton(LITTLE_PET)),
                 Arrays.asList(getButton(BIG_PET)),
-                Arrays.asList(getButton(DISABILITY_PET)),
-                Arrays.asList(getButton(CALL_VOLUNTEER)),
-                Arrays.asList(getButton(START)));
+                Arrays.asList(getButton(DISABILITY_PET)));
     }
 
     InlineKeyboardButton getButton(BotMessageEnum buttonName) {

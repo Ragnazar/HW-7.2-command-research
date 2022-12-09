@@ -8,12 +8,12 @@ import pro.sky.command.repository.OwnerRepository;
 
 @Service
 @Slf4j
-public class ButtonModService {
+public class CheckedService {
     //для запоминания какая кнопка в каком чате нажата
 
     private final OwnerRepository ownerRepository;
 
-    public ButtonModService(OwnerRepository ownerRepository) {
+    public CheckedService(OwnerRepository ownerRepository) {
         this.ownerRepository = ownerRepository;
     }
 
@@ -27,29 +27,36 @@ public class ButtonModService {
         }
         return check;
     }
-    public boolean checkShelterPress(long chatId, BotMessageEnum nameButton) {
+
+    public String checkShelterPress(long chatId) {
         Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
         if (owner != null) {
-            return owner.getShelterButton().equals(nameButton.name());
+            return owner.getShelterButton();
         }
-        return false;
+        return "";
     }
-    public boolean checkButtonPress(long chatId) {
+
+    public boolean checkVolunteerButtonPress(long chatId) {
         Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
         if (owner != null) {
+
             return owner.isVolunteerChat();
         }
         return false;
     }
 
-    public boolean addButtonPress(long chatId, boolean b) {
-        boolean check = false;
-        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
-        if (owner != null) {
-            check = b;
-            owner.setVolunteerChat(true);
+    public void addVolunteerButtonPress(long chatId, boolean b) {
+        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(new Owner(chatId, "No Name"));
+        owner.setVolunteerChat(b);
+        ownerRepository.save(owner);
+    }
+
+    public void clearPressButton(long chatId) {
+        if (ownerRepository.findById(String.valueOf(chatId)).isPresent()) {
+            Owner owner = ownerRepository.findById(String.valueOf(chatId)).get();
+            owner.setVolunteerChat(false);
+            owner.setShelterButton(null);
             ownerRepository.save(owner);
         }
-        return check;
     }
 }
