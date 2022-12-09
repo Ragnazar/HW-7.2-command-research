@@ -31,9 +31,10 @@ public class Pet {
     @Column(name = "name_pet")
     @NotBlank
     private String namePet;
+
     /** Поле идентификатор принадлежности к определенному владельцу */
     @JoinColumn(name = "owner_id")
-    @OneToOne(optional = false, mappedBy = "pet")
+    @ManyToOne(optional = false)
     private Owner owner;
     /** Поле вид питомца (кошка, собака) */
     @NotBlank
