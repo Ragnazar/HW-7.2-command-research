@@ -20,9 +20,14 @@ import java.util.List;
 @Slf4j
 public class SendMessageService {
     @Value("staticFiles/images/")
-    String path;
+    private String path;
+    private final CheckedService checkedService;
 
-    public SendMessage sendMessage(Long chatId, String messageToSend,List<List<InlineKeyboardButton>> keyboardMarkup) {
+    public SendMessageService(CheckedService checkedService) {
+        this.checkedService = checkedService;
+    }
+
+    public SendMessage sendMessage(Long chatId, String messageToSend, List<List<InlineKeyboardButton>> keyboardMarkup) {
         log.debug("вызван блок для создания исходящего сообщения");
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
@@ -50,9 +55,13 @@ public class SendMessageService {
 
     public Object sendPhoto(Long chatId, BotMessageEnum name, String messageToSend, List<List<InlineKeyboardButton>> keyboardMarkup) {
         log.debug("вызван блок для создания исходящего сообщения image");
+        String nameShelter = checkedService.checkShelterPress(chatId);
+        if (nameShelter.equals("")) {
+            return sendMessage(chatId, "Вы не выбрали приют по которому хотите получить информацию. Нажмите главное меню и выберите приют", null);
+        }
         SendPhoto sendPhoto = new SendPhoto();
         try {
-            File image = ResourceUtils.getFile("classpath:" + path + name + ".jpg");
+            File image = ResourceUtils.getFile("classpath:" + path + nameShelter + "_" + name + ".jpg");
             InputFile inputFile = new InputFile(image);
             sendPhoto.setPhoto(inputFile);
             sendPhoto.setChatId(String.valueOf(chatId));
@@ -62,12 +71,9 @@ public class SendMessageService {
             if (keyboardMarkup != null) {
                 sendPhoto.setReplyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMarkup).build());
             }
-
         } catch (FileNotFoundException e) {
-            log.error("Возникла ошибка файл не найден. путь " + "classpath:" + path + name + ".jpg");
-            return SendMessage.builder().chatId(chatId).text("Возможно файл с информацией не найден. Сообшите пожалуйста волонтеру об ошибке.")
-                    .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMarkup).build()).build();
-
+            log.error("Возникла ошибка файл не найден. путь " + "classpath:" + path + nameShelter + "_" + name + ".jpg");
+            return sendMessage(chatId, "Возможно файл с информацией не найден. Нажмите главное меню и сообшите пожалуйста волонтеру об ошибке.", null);
         }
         return sendPhoto;
     }
