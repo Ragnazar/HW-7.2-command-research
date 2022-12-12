@@ -43,7 +43,7 @@ public class Pet {
     /** Поле идентификатор идентификатор отчета о питомце из таблицы report */
     @NotBlank
     @ManyToOne
-    @JoinColumn(name = "report_ids", unique = true, nullable = false, updatable = false)
+    @JoinColumn(name = "report_ids", unique = true, nullable = true, updatable = true)
     private Report report;
 
 }
