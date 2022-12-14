@@ -31,7 +31,7 @@ public class HandlerCallbackQuery {
         long chatId = update.getCallbackQuery().getMessage().getChatId();
 
         switch (callbackData) {
-                   case "CAT_SHELTER":
+            case "CAT_SHELTER":
 
                 log.debug("вызваа команда /CAT_SHELTER");
                 if (checkedService.addShelterPress(chatId, CAT_SHELTER)) {
@@ -55,7 +55,7 @@ public class HandlerCallbackQuery {
                 return service.sendMessageWithReplaceKeyboard(chatId, TAKE_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
             case "PET_REPORT":
                 log.debug("вызваа команда /PET_REPORT");
-                return service.sendMessageWithReplaceKeyboard(chatId, PET_REPORT.getMessage(), messageId, null);
+                return service.sendMessageWithReplaceKeyboard(chatId, PET_REPORT.getMessage(), messageId, keyboardMaker.reportKeyboard());
             //  //меню информации о приюте
             case "SHELTER_DATA":
                 log.debug("вызваа команда /SHELTER_DATA");
@@ -73,7 +73,7 @@ public class HandlerCallbackQuery {
             case "TAKE_DATA_FOR_CONTACT":
                 log.debug("вызваа команда /TAKE_DATA_FOR_CONTACT");
                 checkedService.addVolunteerButtonPress(chatId, true);
-                return service.sendMessage(chatId, TAKE_DATA_FOR_CONTACT.getMessage(),keyboardMaker.infoKeyboard());
+                return service.sendMessage(chatId, TAKE_DATA_FOR_CONTACT.getMessage(), keyboardMaker.infoKeyboard());
             //Меню взять питомца
             case "RULES_SHELTER":
                 log.debug("вызваа команда /RULES_SHELTER");
@@ -107,6 +107,22 @@ public class HandlerCallbackQuery {
             case "DISABILITY_PET":
                 log.debug("вызваа команда /DISABILITY_PET");
                 return service.sendMessageWithReplaceKeyboard(chatId, DISABILITY_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+            case "PHOTO":
+                log.debug("вызваа команда /PHOTO");
+                checkedService.addReportPress(chatId, PHOTO);
+                return service.sendMessage(chatId, PHOTO.getMessage(), keyboardMaker.reportKeyboard());
+            case "DIET":
+                log.debug("вызваа команда /DIET");
+                checkedService.addReportPress(chatId, DIET);
+                return service.sendMessage(chatId, DIET.getMessage(), keyboardMaker.reportKeyboard());
+            case "HEALTH":
+                log.debug("вызваа команда /HEALTH");
+                checkedService.addReportPress(chatId, HEALTH);
+                return service.sendMessage(chatId, HEALTH.getMessage(), keyboardMaker.reportKeyboard());
+            case "BEHAVIOR":
+                log.debug("вызваа команда /BEHAVIOR");
+                checkedService.addReportPress(chatId, BEHAVIOR);
+                return service.sendMessage(chatId, BEHAVIOR.getMessage(), keyboardMaker.reportKeyboard());
 
             default:
                 return service.sendMessage(chatId, "Извините, данная команда пока не поддерживается.", keyboardMaker.startKeyboard());

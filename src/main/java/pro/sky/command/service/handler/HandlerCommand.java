@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import pro.sky.command.constants.Const;
 import pro.sky.command.model.Owner;
-import pro.sky.command.repository.NotificationRepository;
 import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.SendMessageService;
