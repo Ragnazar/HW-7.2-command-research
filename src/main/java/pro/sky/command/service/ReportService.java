@@ -36,25 +36,23 @@ public class ReportService {
         if (pet == null & owner == null) {
             return "Питомец с таким идентификатором не найден. Проверьте правильно ли вы ввели идентификатор. Если все верно сообщите об ошибке волонтеру.";
         }
-//В этой строке возникает ошибка org.springframework.core.convert.ConversionFailedException
-        //как решить не разобралась
-        Report report = petRepository.findByQuery(Long.valueOf(petId), data).orElse(new Report(data, pet));
+        Report report = reportRepository.findByQuery(Long.valueOf(petId), data).orElse(new Report(data, pet));
         if (owner.getReportButton().equals(BotMessageEnum.DIET.name())) {
             report.setDiet(text);
-            answer = BotMessageEnum.DIET.getNameButton() + " успешно добавлен";
+            answer = BotMessageEnum.DIET.getNameButton() + " за " + data + " успешно добавлен.";
         }
         if (owner.getReportButton().equals(BotMessageEnum.HEALTH.name())) {
             report.setStateOfHealth(text);
-            answer = BotMessageEnum.HEALTH.getNameButton() + " успешно добавлен";
+            answer = BotMessageEnum.HEALTH.getNameButton() + " за " + data + " успешно добавлен";
         }
         if (owner.getReportButton().equals(BotMessageEnum.BEHAVIOR.name())) {
             report.setBehaviorChanges(text);
-            answer = BotMessageEnum.BEHAVIOR.getNameButton() + " успешно добавлен. ";
+            answer = BotMessageEnum.BEHAVIOR.getNameButton() + " за " + data + " успешно добавлен. ";
         }
         reportRepository.save(report);
-if (!checkReport(report).isEmpty()){
-    answer=answer+" Не забудьте добавить "+checkReport(report);
-}
+        if (!checkReport(report).isEmpty()) {
+            answer = answer + " Не забудьте добавить " + checkReport(report);
+        }
 
         return answer;
 
@@ -62,16 +60,16 @@ if (!checkReport(report).isEmpty()){
 
     private String checkReport(Report report) {
         String answer = "";
-        if (report.getDiet()==null) {
+        if (report.getDiet() == null) {
             answer = "рацион ";
         }
-        if (report.getBehaviorChanges()==null) {
+        if (report.getBehaviorChanges() == null) {
             answer = answer + " изменения в поедении и привычках питомца ";
         }
-        if (report.getStateOfHealth()==null) {
+        if (report.getStateOfHealth() == null) {
             answer = answer + "состояние здоровья питомца ";
         }
-        if (report.getPathToPhoto()==null) {
+        if (report.getPathToPhoto() == null) {
             answer = answer + "фотографию питомца ";
         }
         return answer;

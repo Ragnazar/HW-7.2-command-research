@@ -23,34 +23,27 @@ public class Report {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Report_id", nullable = false)
     private Long reportId;
-
     /**
      * Поле даты заполнения
      */
-
     @Column(name = "recording_date")
     private String recordingDate;
-
     /**
      * Поле с фотографией питомца
      */
     @Column(name = "photo")
     private String pathToPhoto;
-
     /**
      * Поле рациона питания питомца
      */
     @Column(name = "diet")
     private String diet;
-
     /**
      * Поле состояния здоровья питомца
      */
     @Column(name = "state_of_health")
     private String stateOfHealth;
-
     /**
      * Поле описания изменений в поедении и привычках питомца
      */
@@ -59,7 +52,6 @@ public class Report {
     /**
      * Поле идентификатор питомца
      */
-
     @ManyToOne
     @JoinColumn(name = "pet")
     private Pet pet;

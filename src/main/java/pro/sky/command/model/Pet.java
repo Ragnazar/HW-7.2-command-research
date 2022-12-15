@@ -19,7 +19,6 @@ public class Pet {
      * Поле идентификатор питомца
      */
     @Id
-    @Column(name = "Pet_id")
     @NotBlank
     private Long id;
     /**
