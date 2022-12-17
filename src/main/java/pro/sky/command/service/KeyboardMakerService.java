@@ -61,6 +61,10 @@ public class KeyboardMakerService {
                 Arrays.asList(getButton(BIG_PET)),
                 Arrays.asList(getButton(DISABILITY_PET)));
     }
+    public List<List<InlineKeyboardButton>> reportKeyboard() {
+        return Arrays.asList(Arrays.asList(getButton(PHOTO),getButton(DIET)),
+                         Arrays.asList(getButton(HEALTH),getButton(BEHAVIOR)));
+    }
 
     InlineKeyboardButton getButton(BotMessageEnum buttonName) {
         return InlineKeyboardButton.builder().text(buttonName.getNameButton()).callbackData(buttonName.name()).build();

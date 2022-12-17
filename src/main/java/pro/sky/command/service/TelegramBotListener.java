@@ -2,6 +2,7 @@ package pro.sky.command.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
@@ -11,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import pro.sky.command.configuration.TelegramBotConfiguration;
 import pro.sky.command.exception.ExecuteException;
+import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.service.handler.HandlerCallbackQuery;
 import pro.sky.command.service.handler.HandlerCommand;
 import pro.sky.command.service.handler.HandlerMessages;
@@ -18,8 +20,10 @@ import pro.sky.command.service.handler.HandlerMessages;
 import java.util.List;
 
 
+
 @Component
 @Slf4j
+@Transactional
 public class TelegramBotListener extends TelegramLongPollingBot {
     private final TelegramBotConfiguration configuration;
     private final HandlerCallbackQuery callbackQuery;
@@ -31,7 +35,7 @@ public class TelegramBotListener extends TelegramLongPollingBot {
         this.callbackQuery = callbackQuery;
         this.handlerCommand = handlerCommand;
         this.handlerMessages = handlerMessages;
-    }
+     }
 
     @Override
     public String getBotUsername() {
@@ -52,6 +56,8 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                 executeMessage(handlerCommand.handleMessage(message));
             } else if (message.hasText()) {
                 executeMessage(handlerMessages.handleText(message));
+            } else if (message.hasPhoto()) {
+
             }
         } else if (update.hasCallbackQuery()) {
             executeMessage(callbackQuery.handleCallbackQuery(update));

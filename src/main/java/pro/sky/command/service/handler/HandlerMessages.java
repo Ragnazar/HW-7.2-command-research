@@ -9,14 +9,19 @@ import pro.sky.command.model.Notification;
 import pro.sky.command.repository.NotificationRepository;
 import pro.sky.command.service.CheckedService;
 import pro.sky.command.service.KeyboardMakerService;
+import pro.sky.command.service.ReportService;
 import pro.sky.command.service.SendMessageService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static pro.sky.command.constants.BotMessageEnum.CALL_VOLUNTEER;
-import static pro.sky.command.constants.BotMessageEnum.START;
+import static pro.sky.command.constants.BotMessageEnum.*;
 
+/**
+ * Класс для обработки полученных текстовых сообщений
+ *
+ * @autor Наталья Шилова
+ */
 @Service
 @Slf4j
 public class HandlerMessages {
@@ -25,12 +30,18 @@ public class HandlerMessages {
     private final CheckedService checkedService;
     private final NotificationRepository notificationRepository;
     private final KeyboardMakerService keyboardMaker;
+    private final ReportService reportService;
 
-    public HandlerMessages(SendMessageService service, CheckedService checkedService, NotificationRepository notificationRepository, KeyboardMakerService keyboardMaker) {
+
+    /**
+     * имеет зависимость от сервисов
+     */
+    public HandlerMessages(SendMessageService service, CheckedService checkedService, NotificationRepository notificationRepository, KeyboardMakerService keyboardMaker, ReportService reportService) {
         this.service = service;
         this.checkedService = checkedService;
         this.notificationRepository = notificationRepository;
         this.keyboardMaker = keyboardMaker;
+        this.reportService = reportService;
     }
 
     public Object handleText(Message message) {
@@ -40,20 +51,40 @@ public class HandlerMessages {
         int messageId = message.getMessageId();
 
         if (text.equals(START.getNameButton())) {
-          checkedService.clearPressButton(chatId);
+            checkedService.clearPressButton(chatId);
             return service.sendMessage(chatId, START.getMessage(), keyboardMaker.startKeyboard());
         }
 
         if (text.equals(CALL_VOLUNTEER.getNameButton())) {
-            checkedService.addVolunteerButtonPress(chatId,true);
-            return service.sendMessage(chatId, CALL_VOLUNTEER.getMessage(),null);
+            checkedService.addVolunteerButtonPress(chatId, true);
+            return service.sendMessage(chatId, CALL_VOLUNTEER.getMessage(), null);
         }
+
+        if (checkedService.checkReportPress(chatId)) {
+            int firstDelimiter = text.indexOf(' ');
+            String dataReport = null;
+            String petId = null;
+            if (firstDelimiter > 0) {
+                dataReport = text.substring(0, firstDelimiter);
+                text = text.substring(firstDelimiter + 1);
+            }
+            int secondDelimiter = text.indexOf(' ');
+            if (secondDelimiter > 0) {
+                petId = text.substring(0, secondDelimiter);
+                text = text.substring(secondDelimiter + 1);
+            }
+            if (dataReport.matches(Const.PATTERN_DATA)&petId.matches(Const.PATTERN_PET_ID)) {
+                return service.sendMessage(chatId, reportService.checkReport(chatId,dataReport,petId,text), keyboardMaker.reportKeyboard());
+            }
+        }
+
 
         if (checkedService.checkVolunteerButtonPress(chatId)) {
             notificationRepository.save(new Notification(chatId, text, messageId));
-            return CopyMessage.builder().messageId(messageId).fromChatId(chatId).chatId(Const.VOLUNTEER_CHAT_ID).caption(text).build();
+            return service.sendMessage(Const.VOLUNTEER_CHAT_ID,
+                    message.getFrom().getFirstName() + "  " + chatId + " спрашивает " + text, null);
         }
-        if (chatId .equals(Const.VOLUNTEER_CHAT_ID)) {
+        if (chatId.equals(Const.VOLUNTEER_CHAT_ID)) {
             String textNotification = message.getReplyToMessage().getText();
             List<Notification> notifications = notificationRepository.findAllByText(textNotification);
             List<CopyMessage> messages = new ArrayList<>();
@@ -64,7 +95,7 @@ public class HandlerMessages {
             return messages;
         }
 
-        //  return CopyMessage.builder().messageId(messageId).fromChatId(chatId).replyToMessageId(messageId).chatId(ci).caption(text).build();
-        return null;
+        return service.sendMessage(chatId, "Бот понимает сообщения только в определенном формате." +
+                " При нажатии кнопки, вы можете посмотреть, что от вас ожидает бот. Начните с нажатия кнопки главное меню.", null);
     }
 }

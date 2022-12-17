@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import java.util.List;
 
 @Entity
 @Table(name = "pets")
@@ -20,9 +19,6 @@ public class Pet {
      * Поле идентификатор питомца
      */
     @Id
-    @GeneratedValue
-    @JdbcTypeCode(SqlTypes.BIGINT)
-    @Column(name = "id")
     @NotBlank
     private Long id;
     /**
@@ -41,9 +37,8 @@ public class Pet {
     @Column(name = "kind")
     private String kindOfAnimal;
     /** Поле идентификатор идентификатор отчета о питомце из таблицы report */
-    @NotBlank
-    @ManyToOne
-    @JoinColumn(name = "report_ids", unique = true, nullable = false, updatable = false)
-    private Report report;
+
+   @OneToMany(mappedBy = "pet")
+       private List<Report> reports;
 
 }
