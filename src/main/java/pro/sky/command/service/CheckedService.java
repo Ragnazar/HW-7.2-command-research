@@ -28,6 +28,17 @@ public class CheckedService {
         return check;
     }
 
+    public boolean addReportPress(long chatId, BotMessageEnum nameButton) {
+        boolean check = false;
+        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
+        if (owner != null) {
+            check = true;
+            owner.setReportButton(nameButton.name());
+            ownerRepository.save(owner);
+        }
+        return check;
+    }
+
     public String checkShelterPress(long chatId) {
         Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
         if (owner != null) {
@@ -36,10 +47,20 @@ public class CheckedService {
         return "";
     }
 
+    public boolean checkReportPress(long chatId) {
+        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
+        if (owner == null) {
+            return false;
+        }
+        if (owner.getReportButton()==null) {
+            return false;
+        }
+        return true;
+    }
+
     public boolean checkVolunteerButtonPress(long chatId) {
         Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
         if (owner != null) {
-
             return owner.isVolunteerChat();
         }
         return false;
