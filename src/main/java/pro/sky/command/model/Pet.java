@@ -38,9 +38,7 @@ public class Pet {
     private String kindOfAnimal;
     /** Поле идентификатор идентификатор отчета о питомце из таблицы report */
 
-    @NotBlank
-    @ManyToOne
-    @JoinColumn(name = "report_ids", unique = true, nullable = true, updatable = true)
-    private Report report;
+    @OneToMany(mappedBy = "pet")
+    private List<Report> reports;
 
 }
