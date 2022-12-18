@@ -1,5 +1,6 @@
 package pro.sky.command.service;
 
+
 import org.springframework.stereotype.Component;
 import pro.sky.command.constants.BotMessageEnum;
 import pro.sky.command.constants.Const;
@@ -12,13 +13,23 @@ import pro.sky.command.repository.ReportRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
+/**
+ * Класс для работы с таблицей отчет. Добавляет ввделенные сообщения в таблицу и возвращает сообщение.
+ *
+ * @autor Шилова Наталья
+ */
 @Component
 public class ReportService {
     private final ReportRepository reportRepository;
     private final OwnerRepository ownerRepository;
     private final PetRepository petRepository;
 
+    /**
+     * Конструктор зависимостей
+     * @see ReportRepository
+     *  @see OwnerRepository
+     * @see PetRepository
+     */
     public ReportService(ReportRepository reportRepository, OwnerRepository ownerRepository, PetRepository petRepository) {
         this.reportRepository = reportRepository;
         this.ownerRepository = ownerRepository;
@@ -26,9 +37,14 @@ public class ReportService {
     }
 
     /**
-     * Проверяет какие поля в таблице отчет заполнены. Возвращает строку которая, будет отправлена пользователю.
+     * Проверяет есть ли пользователь и питомец с указанными номерами. По дате отчета добавляет в таблицу текст, присланный пользователем.
+     *@param chatId идентификатор чата пользователя
+     *@param data дата отчета получается в сообщениипользователя
+     *@param petId идентификатор питомца
+     *@param text текст сообщения отчета
+     *@return возвращает строку которая будет отправлена пользователю.
      */
-    public String checkReport(long chatId, String data, String petId, String text) {
+    public String addReport(long chatId, String data, String petId, String text) {
         String answer = "";
         LocalDate dateTime = LocalDate.parse(data, DateTimeFormatter.ofPattern(Const.PATTERN_LOCAL_DATA));
         Pet pet = petRepository.findById(Long.valueOf(petId)).orElse(null);
@@ -49,15 +65,22 @@ public class ReportService {
             report.setBehaviorChanges(text);
             answer = BotMessageEnum.BEHAVIOR.getNameButton() + " за " + data + " успешно добавлен. ";
         }
+        if (owner.getReportButton().equals(BotMessageEnum.PHOTO.name())){
+            report.setPathToPhoto(text);
+            answer = BotMessageEnum.PHOTO.getNameButton() + " за " + data + " успешно добавлен. ";
+        }
         reportRepository.save(report);
         if (!checkReport(report).isEmpty()) {
             answer = answer + " Не забудьте добавить " + checkReport(report);
         }
-
         return answer;
-
     }
 
+    /**
+     * Проверяет какие поля в таблице отчет заполнены. Возвращает строку которая, будет отправлена пользователю.
+     *@param report Принимает объект отчет
+     *@return возвращает строку которая содержит какие поля в отчете еще не заполнены.
+     */
     private String checkReport(Report report) {
         String answer = "";
         if (report.getDiet() == null) {

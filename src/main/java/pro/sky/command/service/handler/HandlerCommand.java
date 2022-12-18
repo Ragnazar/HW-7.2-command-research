@@ -23,6 +23,11 @@ import java.util.Optional;
 
 import static pro.sky.command.constants.BotMessageEnum.*;
 
+/**
+ * Класс для обработки специальных камманд.
+ *
+ * @autor Шилова Наталья
+ */
 @Service
 @Slf4j
 public class HandlerCommand {
@@ -30,17 +35,30 @@ public class HandlerCommand {
     private final KeyboardMakerService keyboardMaker;
     private final OwnerRepository ownerRepository;
 
+    /**
+     * Конструктор зависимостей
+     *
+     * @see SendMessageService
+     * @see KeyboardMakerService
+     * @see OwnerRepository
+     */
     public HandlerCommand(SendMessageService service, KeyboardMakerService keyboardMaker, OwnerRepository ownerRepository) {
         this.service = service;
         this.keyboardMaker = keyboardMaker;
         this.ownerRepository = ownerRepository;
-      }
+    }
 
+    /**
+     * Обрабатывает поступающие команды.
+     * реагирует на команду /start и номер телефона в определенном формате
+     *
+     * @param message сообщение из чата пользователя
+     * @return возвращает объект который может быть отправлен в телеграм с помощью метода execute.
+     */
     public Object handleMessage(Message message) {
         log.debug("вызов блок для извлечения из сообщения и обработки команды");
         long chatId = message.getChatId();
-        Optional<MessageEntity> commandEntity = message.getEntities().stream()
-                .filter(e -> "bot_command".equals(e.getType()) || "phone_number".equals(e.getType())).findFirst();
+        Optional<MessageEntity> commandEntity = message.getEntities().stream().filter(e -> "bot_command".equals(e.getType()) || "phone_number".equals(e.getType())).findFirst();
 
 
         if ("phone_number".equals(commandEntity.get().getType())) {
@@ -50,7 +68,7 @@ public class HandlerCommand {
             List<BotApiMethod> messages = new ArrayList<>();
 
             messages.add(CopyMessage.builder().messageId(message.getMessageId()).fromChatId(chatId).chatId(Const.VOLUNTEER_CHAT_ID).build());
-            messages.add(service.sendMessage(Const.VOLUNTEER_CHAT_ID, "Ожидает звонка. Эти сообщения не требуют ответа",null));
+            messages.add(service.sendMessage(Const.VOLUNTEER_CHAT_ID, "Ожидает звонка. Эти сообщения не требуют ответа", null));
             messages.add(service.sendMessage(chatId, "Ожидайте звонка.", keyboardMaker.startKeyboard()));
             return messages;
         }
@@ -65,27 +83,45 @@ public class HandlerCommand {
         }
     }
 
+    /**
+     * создает ответ пользователю после вызова команды /start.
+     * проверяет есть ли пользователь в базе и в зависимотси от этого подставляет разную панель кнопок.
+     *
+     * @param chatId идентификатор чата пользователя
+     * @param name   Имя пользователя
+     * @return возвращает строку которая будет отправлена пользователю.
+     */
     private SendMessage startCommand(Long chatId, String name) {
         log.debug("вызван приветственный блок кода после команды старт");
 
         String answer = "Привет, " + name + " приятно познакомится!" + HELP_MESSAGE.getMessage();
-        if (ownerRepository.findById(chatId.toString()).isEmpty()){
+        if (ownerRepository.findById(chatId.toString()).isEmpty()) {
             registerUser(chatId, name);
         }
-        return SendMessage.builder().chatId(chatId).text(answer)
-                .replyMarkup(ReplyKeyboardMarkup.builder()
-                        .keyboardRow(new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(START.getNameButton()).build()
-                                ,(KeyboardButton.builder().text(CALL_VOLUNTEER.getNameButton()).build()))))
-                        .resizeKeyboard(true).oneTimeKeyboard(false).build())
-                .build();
+        return SendMessage.builder().chatId(chatId).text(answer).replyMarkup(ReplyKeyboardMarkup.builder().keyboardRow(new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(START.getNameButton()).build(), (KeyboardButton.builder().text(CALL_VOLUNTEER.getNameButton()).build())))).resizeKeyboard(true).oneTimeKeyboard(false).build()).build();
     }
 
+    /**
+     * Добавляет нового пользователя в базу
+     *
+     * @param chatId идентификатор чата пользователя
+     * @param name   Имя пользователя
+     */
     private void registerUser(Long chatId, String name) {
+        log.debug("вызван блок кода для регистрации пользователя");
         Owner owner = new Owner(chatId, name);
         ownerRepository.save(owner);
     }
 
+    /**
+     * Добавляет пользователю номер телефона после того как пользователь ввел свой телефонный номер в формате "11 цифр начиная с 8 без разделителей".
+     *
+     * @param chatId идентификатор чата пользователя
+     * @param name   Имя пользователя
+     * @param phone  номер телефона пользовавтеля
+     */
     private void addPhoneUser(Long chatId, String name, String phone) {
+        log.debug("вызван блок кода для добавления пользователю номера телефона");
         Owner owner = ownerRepository.findById(chatId.toString()).orElse(new Owner(chatId, name));
         owner.setPhoneNumber(phone);
     }

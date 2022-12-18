@@ -1,9 +1,3 @@
-/**
- * Контроллер для работы с базой данных <b>pet</b>.
- * @autor Иван Авдеев
- * @version 0.1
- */
-
 package pro.sky.command.controller;
 
 import org.springframework.http.HttpStatus;
@@ -14,6 +8,11 @@ import pro.sky.command.repository.PetRepository;
 import pro.sky.command.service.PetService;
 
 import java.util.Collection;
+/**
+ * Контроллер для работы с базой данных <b>pet</b>.
+ * @autor Иван Авдеев
+ * @version 0.1
+ */
 
 @RestController
 @RequestMapping("pet")

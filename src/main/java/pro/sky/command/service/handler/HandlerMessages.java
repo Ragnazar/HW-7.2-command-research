@@ -12,9 +12,6 @@ import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.ReportService;
 import pro.sky.command.service.SendMessageService;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static pro.sky.command.constants.BotMessageEnum.*;
 
 /**
@@ -73,26 +70,28 @@ public class HandlerMessages {
                 petId = text.substring(0, secondDelimiter);
                 text = text.substring(secondDelimiter + 1);
             }
-            if (dataReport.matches(Const.PATTERN_DATA)&petId.matches(Const.PATTERN_PET_ID)) {
-                return service.sendMessage(chatId, reportService.checkReport(chatId,dataReport,petId,text), keyboardMaker.reportKeyboard());
+            if (dataReport.matches(Const.PATTERN_DATA) & petId.matches(Const.PATTERN_PET_ID)) {
+                return service.sendMessage(chatId, reportService.addReport(chatId, dataReport, petId, text), keyboardMaker.reportKeyboard());
             }
         }
 
 
         if (checkedService.checkVolunteerButtonPress(chatId)) {
+            text = message.getFrom().getFirstName() + "  " + chatId + " спрашивает:   " + text;
             notificationRepository.save(new Notification(chatId, text, messageId));
-            return service.sendMessage(Const.VOLUNTEER_CHAT_ID,
-                    message.getFrom().getFirstName() + "  " + chatId + " спрашивает " + text, null);
+            return service.sendMessage(Const.VOLUNTEER_CHAT_ID, text, null);
         }
         if (chatId.equals(Const.VOLUNTEER_CHAT_ID)) {
             String textNotification = message.getReplyToMessage().getText();
-            List<Notification> notifications = notificationRepository.findAllByText(textNotification);
-            List<CopyMessage> messages = new ArrayList<>();
-            for (Notification n : notifications) {
-                notificationRepository.delete(n);
-                messages.add(CopyMessage.builder().messageId(messageId).replyToMessageId(n.getMessageId()).fromChatId(chatId).chatId(n.getId()).caption(text).build());
-            }
-            return messages;
+            Notification notification = notificationRepository.findByText(textNotification);
+            notificationRepository.delete(notification);
+            return CopyMessage.builder()
+                    .messageId(messageId)
+                    .replyToMessageId(notification.getMessageId())
+                    .fromChatId(chatId)
+                    .chatId(notification.getId())
+                    .caption(text)
+                    .build();
         }
 
         return service.sendMessage(chatId, "Бот понимает сообщения только в определенном формате." +

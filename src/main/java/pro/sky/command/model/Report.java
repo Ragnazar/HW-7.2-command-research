@@ -61,13 +61,4 @@ public class Report {
         this.pet = pet;
     }
 
-    public Report(Long reportId, String recordingDate, String pathToPhoto, String diet, String stateOfHealth, String behaviorChanges, Pet pet) {
-        this.reportId = reportId;
-        this.recordingDate = recordingDate;
-        this.pathToPhoto = pathToPhoto;
-        this.diet = diet;
-        this.stateOfHealth = stateOfHealth;
-        this.behaviorChanges = behaviorChanges;
-        this.pet = pet;
-    }
 }
