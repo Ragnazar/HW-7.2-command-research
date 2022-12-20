@@ -8,6 +8,6 @@ import java.util.Optional;
 
 
 public interface ReportRepository extends JpaRepository<Report,Long> {
-    @Query(value = "SELECT r.* FROM report r inner join pets p on r.pet=p.pet_id where r.pet=:pet and r.recording_date=:data", nativeQuery = true)
+    @Query(value = "SELECT r.* FROM report r inner join pet p on r.pet=p.pet_id where r.pet=:pet and r.recording_date=:data", nativeQuery = true)
     Optional<Report> findByQuery(Long pet, String data);
 }

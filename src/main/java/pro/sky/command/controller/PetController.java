@@ -44,7 +44,7 @@ public class PetController {
      * @return возвращает объект, содержащий данные добавленного питомца
      */
     @PostMapping //POST http://localhost:8080/pet
-    public Pet addPet(Pet pet) {
+    public Pet addPet(@RequestBody Pet pet) {
         return service.addPet(pet);
     }
 

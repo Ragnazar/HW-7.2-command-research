@@ -1,9 +1,11 @@
 package pro.sky.command.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import java.util.List;
 
 /**
@@ -12,13 +14,14 @@ import java.util.List;
  * @autor Иван Авдеев
  */
 @Entity
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class Owner {
     /**
      * Поле идентификатор владельца
      */
-    @Id
+    @javax.persistence.Id
     @Column(nullable = false)
     private String chatId;
 
@@ -47,10 +50,12 @@ public class Owner {
     private boolean volunteerChat;
     @OneToMany(mappedBy = "owner")
     @Column(name = "pets_id")
+    @ToString.Exclude
     private List<Pet> pets;
 
     public Owner(Long chatId, String name) {
         this.chatId = chatId.toString();
         this.name = name;
     }
+
 }
