@@ -23,7 +23,7 @@ CREATE TABLE pets
     CONSTRAINT pk_pets PRIMARY KEY (id )
 );
 
-ALTER TABLE pets
+ALTER TABLE pet
     ADD CONSTRAINT FK_PETS_ON_OWNER FOREIGN KEY (owner_id) REFERENCES Owner (chatId);
 
 -- changeset iavdeyev:3
@@ -40,7 +40,7 @@ CREATE TABLE report
 );
 
 ALTER TABLE report
-    ADD CONSTRAINT FK_REPORT_ON_PET FOREIGN KEY (pet) REFERENCES pets (id);
+    ADD CONSTRAINT FK_REPORT_ON_PET FOREIGN KEY (pet) REFERENCES pet (id);
 
 -- changeset NataliShilova:4
 CREATE TABLE Notification

@@ -1,7 +1,9 @@
 package pro.sky.command.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Table;
+
+import javax.persistence.*;
 
 /**
  * Класс ежедневного отчета для питомника о питомце со свойствами <b>photo</b>, <b>diet</b>,
@@ -11,17 +13,18 @@ import lombok.*;
  * @autor Иван Авдеев
  */
 @Entity
-@Table(name = "report")
+@Table(appliesTo = "report")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 
 public class Report {
+
     /**
      * Поле идентификатор отчёта
      */
-    @Id
+    @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
     /**
