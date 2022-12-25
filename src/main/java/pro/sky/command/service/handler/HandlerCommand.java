@@ -15,6 +15,7 @@ import pro.sky.command.model.Owner;
 import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.SendMessageService;
+import pro.sky.command.service.VolunteerService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +35,8 @@ public class HandlerCommand {
     private final SendMessageService service;
     private final KeyboardMakerService keyboardMaker;
     private final OwnerRepository ownerRepository;
+    private final VolunteerService volunteerService;
+
 
     /**
      * Конструктор зависимостей
@@ -42,10 +45,11 @@ public class HandlerCommand {
      * @see KeyboardMakerService
      * @see OwnerRepository
      */
-    public HandlerCommand(SendMessageService service, KeyboardMakerService keyboardMaker, OwnerRepository ownerRepository) {
+    public HandlerCommand(SendMessageService service, KeyboardMakerService keyboardMaker, OwnerRepository ownerRepository, VolunteerService volunteerService) {
         this.service = service;
         this.keyboardMaker = keyboardMaker;
         this.ownerRepository = ownerRepository;
+        this.volunteerService = volunteerService;
     }
 
     /**
@@ -74,6 +78,18 @@ public class HandlerCommand {
         }
         String command = message.getText().substring(commandEntity.get().getOffset(), commandEntity.get().getLength());
 
+        if (chatId == Const.VOLUNTEER_CHAT_ID) {
+            switch (command) {
+                case "/start":
+                    log.debug("вызваа команда /start");
+                    return startCommandVolunteer();
+                case "/report":
+volunteerService.getReport(chatId);
+                default:
+                    return service.sendMessage(chatId, "Извините, данная команда пока не поддерживается.", null);
+            }
+        }
+
         switch (command) {
             case "/start":
                 log.debug("вызваа команда /start");
@@ -97,8 +113,28 @@ public class HandlerCommand {
         String answer = "Привет, " + name + " приятно познакомится!" + HELP_MESSAGE.getMessage();
         if (ownerRepository.findById(chatId.toString()).isEmpty()) {
             registerUser(chatId, name);
+        } else if (!ownerRepository.findById(chatId.toString()).get().getPets().isEmpty()) {
+            return service.sendMessage(chatId, " Привет! Чем я смогу помочь", keyboardMaker.startKeyboardForRegistered());
         }
-        return SendMessage.builder().chatId(chatId).text(answer).replyMarkup(ReplyKeyboardMarkup.builder().keyboardRow(new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(START.getNameButton()).build(), (KeyboardButton.builder().text(CALL_VOLUNTEER.getNameButton()).build())))).resizeKeyboard(true).oneTimeKeyboard(false).build()).build();
+        return SendMessage.builder().chatId(chatId).text(answer)
+                .replyMarkup(ReplyKeyboardMarkup.builder()
+                        .keyboardRow(new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(START.getNameButton()).build(),
+                                (KeyboardButton.builder().text(CALL_VOLUNTEER.getNameButton()).build()))))
+                        .resizeKeyboard(true).oneTimeKeyboard(false).build()).build();
+    }
+
+    /**
+     * создает ответ в чате волонтеров после вызова команды /start.
+     *
+     * @return возвращает строку которая будет отправлена.
+     */
+    private SendMessage startCommandVolunteer() {
+        log.debug("вызван приветственный блок кода после команды старт в чате волонтеров");
+
+        String answer = "Привет, здесь вы сможете работать с отчетами пользователей и отвечать на вопросы пользователя";
+
+        return SendMessage.builder().chatId(Const.VOLUNTEER_CHAT_ID).text(answer)
+                .replyMarkup(ReplyKeyboardMarkup.builder().keyboardRow(new KeyboardRow(Arrays.asList(KeyboardButton.builder().text("/report").build(), (KeyboardButton.builder().text("/owner").build())))).resizeKeyboard(true).oneTimeKeyboard(false).build()).build();
     }
 
     /**

@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.Table;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 /**
  * Класс ежедневного отчета для питомника о питомце со свойствами <b>photo</b>, <b>diet</b>,
@@ -52,6 +53,9 @@ public class Report {
      */
     @Column(name = "behavior_changes")
     private String behaviorChanges;
+@NotBlank
+    private Boolean checkReport=false;
+
     /**
      * Поле идентификатор питомца
      */

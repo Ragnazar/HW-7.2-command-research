@@ -75,14 +75,12 @@ public class TelegramBotListener extends TelegramLongPollingBot {
 
                 int firstDelimiter = text.indexOf(' ');
                 String dataReport = null;
-                String petId = null;
                 if (firstDelimiter > 0) {
                     dataReport = text.substring(0, firstDelimiter);
                     text = text.substring(firstDelimiter + 1);
                 }
-                petId = text.substring(0, text.length());
 
-                if (dataReport.matches(Const.PATTERN_DATA) & petId.matches(Const.PATTERN_PET_ID)) {
+                if (dataReport.matches(Const.PATTERN_DATA) & text.matches(Const.PATTERN_PET_ID)) {
 
                     int i = 0;
                     for (PhotoSize photoSize : update.getMessage().getPhoto()) {
@@ -97,7 +95,7 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                                 createDirectories(filePath.getParent());
                                 Files.deleteIfExists(filePath);
                                 Files.write(filePath, fileToByte);
-                               executeMessage(SendMessage.builder().chatId(chatId).text(reportService.addReport(chatId, dataReport, petId, filePath.toString()))
+                                executeMessage(SendMessage.builder().chatId(chatId).text(reportService.addReport(chatId, dataReport, text, filePath.toString()))
                                         .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMaker.reportKeyboard()).build()).build());
                             }
                         } catch (IOException e) {
@@ -124,6 +122,9 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                 execute((SendDocument) o);
             } else if (o instanceof List<?>) {
                 for (Object m : (List<?>) o) {
+                    if (m instanceof SendPhoto) {
+                        execute((SendPhoto) m);
+                    }
                     execute((BotApiMethod<?>) m);
                 }
             } else {

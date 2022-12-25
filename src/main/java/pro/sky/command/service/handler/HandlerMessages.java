@@ -59,8 +59,8 @@ public class HandlerMessages {
 
         if (checkedService.checkReportPress(chatId)) {
             int firstDelimiter = text.indexOf(' ');
-            String dataReport = null;
-            String petId = null;
+            String dataReport = " ";
+            String petId = " ";
             if (firstDelimiter > 0) {
                 dataReport = text.substring(0, firstDelimiter);
                 text = text.substring(firstDelimiter + 1);
@@ -84,14 +84,16 @@ public class HandlerMessages {
         if (chatId.equals(Const.VOLUNTEER_CHAT_ID)) {
             String textNotification = message.getReplyToMessage().getText();
             Notification notification = notificationRepository.findByText(textNotification);
-            notificationRepository.delete(notification);
-            return CopyMessage.builder()
-                    .messageId(messageId)
-                    .replyToMessageId(notification.getMessageId())
-                    .fromChatId(chatId)
-                    .chatId(notification.getId())
-                    .caption(text)
-                    .build();
+            if (notification != null) {
+                notificationRepository.delete(notification);
+                return CopyMessage.builder()
+                        .messageId(messageId)
+                        .replyToMessageId(notification.getMessageId())
+                        .fromChatId(chatId)
+                        .chatId(notification.getId())
+                        .caption(text)
+                        .build();
+            }
         }
 
         return service.sendMessage(chatId, "Бот понимает сообщения только в определенном формате." +

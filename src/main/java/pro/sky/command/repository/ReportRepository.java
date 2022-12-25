@@ -6,6 +6,12 @@ import pro.sky.command.model.Report;
 
 import java.util.Optional;
 
+/**
+ * Репозиторий для сущности Report
+ * Хранятся отчеты ежедневно присылаемые пользователем. Содержит Номер отчета(автогенерация), дата отчета, номер питомца, фото, рацион, привычки и здоровье питомца.
+ *
+ * @autor Наталья Шилова
+ */
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
@@ -19,4 +25,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
      */
     @Query(value = "SELECT r.* FROM report r inner join pet p on r.pet=p.id where r.pet=:pet and r.recording_date=:data", nativeQuery = true)
     Optional<Report> findByQuery(Long pet, String data);
+    @Query(value = "select r.*  from report r where r.check_report like false limit 1", nativeQuery = true)
+   Report findAllUncheck();
 }

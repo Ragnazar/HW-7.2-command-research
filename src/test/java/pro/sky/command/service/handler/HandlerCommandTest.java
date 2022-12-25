@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.SendMessageService;
+import pro.sky.command.service.VolunteerService;
 
 @DisplayName("Unit-тесты для CommandContainer")
 class HandlerCommandTest {
@@ -15,13 +16,15 @@ class HandlerCommandTest {
     private SendMessageService sendMessageService;
     private OwnerRepository ownerRepository;
     private KeyboardMakerService keyboardMakerService;
+    private VolunteerService volunteerService;
 
     @BeforeEach
     public void init() {
         sendMessageService = Mockito.mock(SendMessageService.class);
         keyboardMakerService = Mockito.mock(KeyboardMakerService.class);
         ownerRepository = Mockito.mock(OwnerRepository.class);
-        handlerCommand = new HandlerCommand(sendMessageService, keyboardMakerService, ownerRepository);
+        volunteerService = Mockito.mock(VolunteerService.class);
+        handlerCommand = new HandlerCommand(sendMessageService, keyboardMakerService, ownerRepository, volunteerService);
     }
 
     @Test

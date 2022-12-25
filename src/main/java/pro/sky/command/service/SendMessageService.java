@@ -59,21 +59,32 @@ public class SendMessageService {
         if (nameShelter.equals("")) {
             return sendMessage(chatId, "Вы не выбрали приют по которому хотите получить информацию. Нажмите главное меню и выберите приют", null);
         }
+        String pathToSend = path + nameShelter + "_" + name + ".jpg";
+        SendPhoto sendPhoto = createSendPhoto(chatId,pathToSend);
+        if (sendPhoto == null) {
+            return sendMessage(chatId, "Возможно файл с информацией не найден. Нажмите главное меню и сообшите пожалуйста волонтеру об ошибке.", null);
+        }
+        if (messageToSend != null) {
+            sendPhoto.setCaption(messageToSend);
+        }
+        if (keyboardMarkup != null) {
+            sendPhoto.setReplyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMarkup).build());
+        }
+
+        return sendPhoto;
+    }
+
+
+    public SendPhoto createSendPhoto(Long chatId, String path) {
         SendPhoto sendPhoto = new SendPhoto();
         try {
-            File image = ResourceUtils.getFile("classpath:" + path + nameShelter + "_" + name + ".jpg");
+            File image = ResourceUtils.getFile("classpath:" + path);
             InputFile inputFile = new InputFile(image);
             sendPhoto.setPhoto(inputFile);
             sendPhoto.setChatId(String.valueOf(chatId));
-            if (messageToSend != null) {
-                sendPhoto.setCaption(messageToSend);
-            }
-            if (keyboardMarkup != null) {
-                sendPhoto.setReplyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMarkup).build());
-            }
         } catch (FileNotFoundException e) {
-            log.error("Возникла ошибка файл не найден. путь " + "classpath:" + path + nameShelter + "_" + name + ".jpg");
-            return sendMessage(chatId, "Возможно файл с информацией не найден. Нажмите главное меню и сообшите пожалуйста волонтеру об ошибке.", null);
+            log.error("Возникла ошибка файл не найден. путь " + "classpath:" + path);
+            return null;
         }
         return sendPhoto;
     }
