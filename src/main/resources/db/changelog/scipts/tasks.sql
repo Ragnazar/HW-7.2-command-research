@@ -14,7 +14,7 @@ CREATE TABLE Owner
 );
 
 -- changeset dlukin:2
-CREATE TABLE pets
+CREATE TABLE pet
 (
     id       BIGINT       NOT NULL,
     name_pet TEXT,

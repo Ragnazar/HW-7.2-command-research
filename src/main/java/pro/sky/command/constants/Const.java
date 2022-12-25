@@ -1,5 +1,8 @@
 package pro.sky.command.constants;
-
+/**
+ * Класс констант.
+ * @autor Шилова Наталья
+ */
 public class Const {
     public static final Long VOLUNTEER_CHAT_ID=-859148741L;
     public static final String PATTERN_LOCAL_DATA = "yyyy-MM-dd";

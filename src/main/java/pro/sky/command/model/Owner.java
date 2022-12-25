@@ -9,14 +9,11 @@ import javax.persistence.OneToMany;
 import java.util.List;
 
 /**
- * Класс для временной записи обращений в чат волонтеров
- *
+ * Класс для добавления пользователей приюта
  * @autor Иван Авдеев
  */
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
 public class Owner {
     /**
      * Поле идентификатор владельца
@@ -41,7 +38,7 @@ public class Owner {
      */
     private String shelterButton;
     /**
-     * Поле для определения того, что из отчета хочет послать владелецся владелец
+     * Поле для определения того, что из отчета хочет послать владелец питомца
      */
     private String reportButton;
     /**
@@ -58,4 +55,6 @@ public class Owner {
         this.name = name;
     }
 
+    public Owner() {
+            }
 }
