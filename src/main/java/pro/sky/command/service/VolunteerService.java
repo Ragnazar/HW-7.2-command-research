@@ -9,6 +9,7 @@ import pro.sky.command.model.Report;
 import pro.sky.command.repository.NotificationRepository;
 import pro.sky.command.repository.ReportRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 @Service
 public class VolunteerService {
@@ -29,16 +30,16 @@ public class VolunteerService {
         }
         new Notification(Const.VOLUNTEER_CHAT_ID, report.getReportId().toString(), 0);
         String data = report.getRecordingDate();
-        List<Object> send = null;
-        send.add(service.sendMessage(chatId, report.getReportId() + "  " + data + "  " + report.getPet().getNamePet(), null));
+        List<Object> send = new ArrayList<>();
+        send.add(service.sendMessage(chatId, "отчет № "+report.getReportId() + " за дату  " + data + " для питомца № " + report.getPet().getNamePet(), null));
         send.add(service.sendMessage(chatId, BotMessageEnum.HEALTH.getNameButton() +
-                "  " + data + "   \n" + report.getStateOfHealth(), null));
+                " от  " + data + "   \n" + report.getStateOfHealth(), null));
         send.add(service.sendMessage(chatId, BotMessageEnum.BEHAVIOR.getNameButton() +
-                "  " + data + "   \n" + report.getBehaviorChanges(), null));
+                " от  " + data + "   \n" + report.getBehaviorChanges(), null));
         send.add(service.sendMessage(chatId, BotMessageEnum.DIET.getNameButton() +
-                "  " + data + "   \n" + report.getDiet(), null));
+                " от  " + data + "   \n" + report.getDiet(), null));
         SendPhoto sendPhoto = service.createSendPhoto(chatId, report.getPathToPhoto());
-        sendPhoto.setCaption(BotMessageEnum.PHOTO.getNameButton() + send.add("  " + data));
+        sendPhoto.setCaption(BotMessageEnum.PHOTO.getNameButton() + "  " + data);
         send.add(sendPhoto);
         return send;
     }

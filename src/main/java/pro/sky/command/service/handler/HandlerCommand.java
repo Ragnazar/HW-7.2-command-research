@@ -84,7 +84,7 @@ public class HandlerCommand {
                     log.debug("вызваа команда /start");
                     return startCommandVolunteer();
                 case "/report":
-volunteerService.getReport(chatId);
+return  volunteerService.getReport(chatId);
                 default:
                     return service.sendMessage(chatId, "Извините, данная команда пока не поддерживается.", null);
             }
