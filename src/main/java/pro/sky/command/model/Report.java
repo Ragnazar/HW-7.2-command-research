@@ -53,8 +53,8 @@ public class Report {
      */
     @Column(name = "behavior_changes")
     private String behaviorChanges;
-@NotBlank
-    private Boolean checkReport=false;
+
+    private Boolean checkReport;
 
     /**
      * Поле идентификатор питомца
@@ -66,6 +66,7 @@ public class Report {
     public Report(String recordingDate, Pet pet) {
         this.recordingDate = recordingDate;
         this.pet = pet;
+        this.checkReport=false;
     }
 
 }

@@ -19,7 +19,7 @@ public class TelegramBotConfiguration {
     private String botName;
     @Value("${telegram.bot.token}")
     private String token;
-    @Value("${report.avatar.dir.path}")
+    @Value("${report.dir.path}")
     private String reportPhotoPath;
 
 

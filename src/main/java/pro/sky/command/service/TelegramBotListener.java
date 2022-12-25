@@ -124,8 +124,9 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                 for (Object m : (List<?>) o) {
                     if (m instanceof SendPhoto) {
                         execute((SendPhoto) m);
+                    } else if (m instanceof BotApiMethod<?>) {
+                        execute((BotApiMethod<?>) m);
                     }
-                    execute((BotApiMethod<?>) m);
                 }
             } else {
                 throw new ExecuteException("Что то пошло не так при отправке сообщения. Возможно передан объект не поддерживаемый методом");

@@ -59,7 +59,7 @@ public class SendMessageService {
         if (nameShelter.equals("")) {
             return sendMessage(chatId, "Вы не выбрали приют по которому хотите получить информацию. Нажмите главное меню и выберите приют", null);
         }
-        String pathToSend = path + nameShelter + "_" + name + ".jpg";
+        String pathToSend = "classpath:" +path + nameShelter + "_" + name + ".jpg";
         SendPhoto sendPhoto = createSendPhoto(chatId,pathToSend);
         if (sendPhoto == null) {
             return sendMessage(chatId, "Возможно файл с информацией не найден. Нажмите главное меню и сообшите пожалуйста волонтеру об ошибке.", null);
@@ -78,12 +78,12 @@ public class SendMessageService {
     public SendPhoto createSendPhoto(Long chatId, String path) {
         SendPhoto sendPhoto = new SendPhoto();
         try {
-            File image = ResourceUtils.getFile("classpath:" + path);
+            File image = ResourceUtils.getFile( path);
             InputFile inputFile = new InputFile(image);
             sendPhoto.setPhoto(inputFile);
             sendPhoto.setChatId(String.valueOf(chatId));
         } catch (FileNotFoundException e) {
-            log.error("Возникла ошибка файл не найден. путь " + "classpath:" + path);
+            log.error("Возникла ошибка файл не найден. путь " +  path);
             return null;
         }
         return sendPhoto;

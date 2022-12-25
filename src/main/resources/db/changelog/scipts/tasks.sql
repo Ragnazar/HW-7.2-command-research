@@ -50,3 +50,7 @@ CREATE TABLE Notification
     messageId INTEGER NOT NULL,
     CONSTRAINT pk_notification PRIMARY KEY (id)
 );
+ALTER TABLE report
+    ADD checkReport BOOLEAN;
+ALTER TABLE report
+    ALTER COLUMN checkReport SET DEFAULT 'false';
