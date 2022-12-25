@@ -22,12 +22,4 @@ public class TelegramBotConfiguration {
     @Value("${report.dir.path}")
     private String reportPhotoPath;
 
-
-    @Value("${service.file_storage.uri}")
-    private String fileUri;
-
-    public String getFileUri(String filePath) {
-        return fileUri+token+"/"+filePath;
-    }
-
 }

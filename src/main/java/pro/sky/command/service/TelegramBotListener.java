@@ -72,15 +72,15 @@ public class TelegramBotListener extends TelegramLongPollingBot {
             } else if (message.hasPhoto()) {
                 String text = message.getCaption();
                 long chatId = message.getChatId();
-
+                String petId = null;
                 int firstDelimiter = text.indexOf(' ');
                 String dataReport = null;
                 if (firstDelimiter > 0) {
                     dataReport = text.substring(0, firstDelimiter);
-                    text = text.substring(firstDelimiter + 1);
+                    petId = text.substring(firstDelimiter + 1);
                 }
 
-                if (dataReport.matches(Const.PATTERN_DATA) & text.matches(Const.PATTERN_PET_ID)) {
+                if (dataReport.matches(Const.PATTERN_DATA) & petId.matches(Const.PATTERN_PET_ID)) {
 
                     int i = 0;
                     for (PhotoSize photoSize : update.getMessage().getPhoto()) {
@@ -95,7 +95,7 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                                 createDirectories(filePath.getParent());
                                 Files.deleteIfExists(filePath);
                                 Files.write(filePath, fileToByte);
-                                executeMessage(SendMessage.builder().chatId(chatId).text(reportService.addReport(chatId, dataReport, text, filePath.toString()))
+                                executeMessage(SendMessage.builder().chatId(chatId).text(reportService.addReport(chatId, dataReport, petId, filePath.toString()))
                                         .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMaker.reportKeyboard()).build()).build());
                             }
                         } catch (IOException e) {
