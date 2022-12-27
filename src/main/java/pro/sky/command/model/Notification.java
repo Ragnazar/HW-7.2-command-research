@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Notification {
     /**
      * Поле идентификатор. в него записывается идентификатор чата из которого послано сообщение
@@ -32,5 +33,6 @@ public class Notification {
         this.text = text;
         this.messageId = messageId;
     }
+
 
 }

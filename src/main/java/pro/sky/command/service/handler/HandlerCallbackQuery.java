@@ -1,30 +1,50 @@
 package pro.sky.command.service.handler;
 
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import pro.sky.command.repository.OwnerRepository;
+import pro.sky.command.constants.BotMessageEnum;
 import pro.sky.command.service.CheckedService;
 import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.SendMessageService;
 
 import static pro.sky.command.constants.BotMessageEnum.*;
 
+/**
+ * Класс для обработки комманд после нажатия кнопок.
+ * формирует ответные сообщения
+ *
+ * @autor Шилова Наталья
+ */
 @Service
 @Slf4j
 public class HandlerCallbackQuery {
     private final SendMessageService service;
     private final CheckedService checkedService;
     private final KeyboardMakerService keyboardMaker;
-    private final OwnerRepository ownerRepository;
 
-    public HandlerCallbackQuery(SendMessageService service, CheckedService checkedService, KeyboardMakerService keyboardMaker, OwnerRepository ownerRepository) {
+    /**
+     * Конструктор зависимостей
+     *
+     * @see SendMessageService
+     * @see CheckedService
+     * @see KeyboardMakerService
+     */
+    public HandlerCallbackQuery(SendMessageService service, CheckedService checkedService, KeyboardMakerService keyboardMaker) {
         this.service = service;
         this.checkedService = checkedService;
         this.keyboardMaker = keyboardMaker;
-        this.ownerRepository = ownerRepository;
     }
 
+    /**
+     * Обрабатывает команды поступающие от нажатия кнопок.
+     * реагирует кнопки из класса
+     *
+     * @param update сообщение из чата пользователя
+     * @return возвращает объект который может быть отправлен в телеграм с помощью метода execute.
+     * @see BotMessageEnum
+     */
     public Object handleCallbackQuery(Update update) {
         String callbackData = update.getCallbackQuery().getData();
         int messageId = update.getCallbackQuery().getMessage().getMessageId();
