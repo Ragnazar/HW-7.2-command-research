@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import pro.sky.command.repository.OwnerRepository;
+import pro.sky.command.repository.PetRepository;
 import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.SendMessageService;
 import pro.sky.command.service.VolunteerService;
@@ -24,7 +25,8 @@ class HandlerCommandTest {
         keyboardMakerService = Mockito.mock(KeyboardMakerService.class);
         ownerRepository = Mockito.mock(OwnerRepository.class);
         volunteerService = Mockito.mock(VolunteerService.class);
-        handlerCommand = new HandlerCommand(sendMessageService, keyboardMakerService, ownerRepository, volunteerService);
+        PetRepository petRepository = null;
+        handlerCommand = new HandlerCommand(sendMessageService, keyboardMakerService, ownerRepository, volunteerService, petRepository);
     }
 
     @Test

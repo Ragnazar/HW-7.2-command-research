@@ -63,12 +63,18 @@ public class TelegramBotListener extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         log.debug("вызван блок для получения всех входящих сообщений");
+
+        executeMessage(updateReceived(update));
+    }
+
+
+    public Object updateReceived(Update update) {
         if (update.hasMessage()) {
             Message message = update.getMessage();
             if (message.hasText() && message.hasEntities()) {
-                executeMessage(handlerCommand.handleMessage(message));
+                return handlerCommand.handleMessage(message);
             } else if (message.hasText()) {
-                executeMessage(handlerMessages.handleText(message));
+                return handlerMessages.handleText(message);
             } else if (message.hasPhoto()) {
                 String text = message.getCaption();
                 long chatId = message.getChatId();
@@ -90,25 +96,23 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                         try {
                             File file = execute(getFile);
                             byte[] fileToByte = Files.readAllBytes(downloadFile(file).toPath());
-                            while (i == 2) {
-                                i++;
+                            if (i == 2) {
                                 createDirectories(filePath.getParent());
                                 Files.deleteIfExists(filePath);
                                 Files.write(filePath, fileToByte);
-                                executeMessage(SendMessage.builder().chatId(chatId).text(reportService.addReport(chatId, dataReport, petId, filePath.toString()))
-                                        .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMaker.reportKeyboard()).build()).build());
+                                return SendMessage.builder().chatId(chatId).text(reportService.addReport(chatId, dataReport, petId, filePath.toString()))
+                                        .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMaker.reportKeyboard()).build()).build();
                             }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (TelegramApiException e) {
+                        } catch (IOException | TelegramApiException e) {
                             throw new RuntimeException(e);
                         }
                     }
                 }
             }
         } else if (update.hasCallbackQuery()) {
-            executeMessage(callbackQuery.handleCallbackQuery(update));
+            return callbackQuery.handleCallbackQuery(update);
         }
+        return null;
 
     }
 
@@ -132,6 +136,7 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                 throw new ExecuteException("Что то пошло не так при отправке сообщения. Возможно передан объект не поддерживаемый методом");
             }
         } catch (ExecuteException | TelegramApiException e) {
+
             log.error("Возникла ошибка при отправке сообщения в телеграм" + e.getMessage());
         }
     }
