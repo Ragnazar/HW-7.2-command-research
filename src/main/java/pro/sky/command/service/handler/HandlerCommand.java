@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import pro.sky.command.constants.Const;
 import pro.sky.command.model.Owner;
 import pro.sky.command.repository.OwnerRepository;
+import pro.sky.command.repository.PetRepository;
 import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.SendMessageService;
 import pro.sky.command.service.VolunteerService;
@@ -36,6 +37,7 @@ public class HandlerCommand {
     private final KeyboardMakerService keyboardMaker;
     private final OwnerRepository ownerRepository;
     private final VolunteerService volunteerService;
+    private final PetRepository petRepository;
 
 
     /**
@@ -45,11 +47,12 @@ public class HandlerCommand {
      * @see KeyboardMakerService
      * @see OwnerRepository
      */
-    public HandlerCommand(SendMessageService service, KeyboardMakerService keyboardMaker, OwnerRepository ownerRepository, VolunteerService volunteerService) {
+    public HandlerCommand(SendMessageService service, KeyboardMakerService keyboardMaker, OwnerRepository ownerRepository, VolunteerService volunteerService, PetRepository petRepository) {
         this.service = service;
         this.keyboardMaker = keyboardMaker;
         this.ownerRepository = ownerRepository;
         this.volunteerService = volunteerService;
+        this.petRepository = petRepository;
     }
 
     /**
@@ -84,7 +87,7 @@ public class HandlerCommand {
                     log.debug("вызваа команда /start");
                     return startCommandVolunteer();
                 case "/report":
-return  volunteerService.getReport(chatId);
+                    return volunteerService.getReport(chatId);
                 default:
                     return service.sendMessage(chatId, "Извините, данная команда пока не поддерживается.", null);
             }
@@ -113,7 +116,7 @@ return  volunteerService.getReport(chatId);
         String answer = "Привет, " + name + " приятно познакомится!" + HELP_MESSAGE.getMessage();
         if (ownerRepository.findById(chatId.toString()).isEmpty()) {
             registerUser(chatId, name);
-        } else if (!ownerRepository.findById(chatId.toString()).get().getPets().isEmpty()) {
+        } else if (!petRepository.findAllByOwner(chatId.toString()).isEmpty()) {
             return service.sendMessage(chatId, " Привет! Чем я смогу помочь", keyboardMaker.startKeyboardForRegistered());
         }
         return SendMessage.builder().chatId(chatId).text(answer)
