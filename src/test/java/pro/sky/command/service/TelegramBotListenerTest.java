@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -14,37 +15,42 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import pro.sky.command.constants.ConstTest;
+import pro.sky.command.model.Owner;
+import pro.sky.command.repository.OwnerRepository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static pro.sky.command.constants.BotMessageEnum.*;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-
+@Transactional
 @OpenAPIDefinition
 class TelegramBotListenerTest {
     @Autowired
     private TelegramBotListener listener;
+    @Autowired
+    private OwnerRepository ownerRepository;
 
     Update update = new Update();
     Message message = new Message();
     User user = new User();
-    Chat chat =new Chat(ConstTest.CHAT_ID,"private");
-    MessageEntity entity=new MessageEntity("bot_command",0,6);
+    Chat chat = new Chat(ConstTest.CHAT_ID, "private");
+    MessageEntity entity = new MessageEntity("bot_command", 0, 6);
     List<List<InlineKeyboardButton>> keyboardMarkup = List.of(List.of(new InlineKeyboardButton("1")));
     SendMessage sendMessage = new SendMessage();
-
-    @BeforeEach
+@BeforeEach
     public void init() {
         user.setIsBot(false);
         user.setId(ConstTest.CHAT_ID);
-        user.setUserName(ConstTest.NAME);
+        user.setFirstName(ConstTest.NAME);
 
         message.setChat(chat);
         message.setText(ConstTest.COMMAND_START);
         message.setEntities(Arrays.asList(entity));
+        message.setFrom(user);
 
         sendMessage.setText("Привет, " + ConstTest.NAME + " приятно познакомится!" + HELP_MESSAGE.getMessage());
         sendMessage.setChatId(ConstTest.CHAT_ID);
@@ -57,7 +63,11 @@ class TelegramBotListenerTest {
 
     @Test
     void onUpdateReceived() {
-        Assertions.assertEquals(sendMessage,listener.updateReceived(update));
+        Owner owner = new Owner(ConstTest.CHAT_ID, ConstTest.NAME);
+        update.setMessage(message);
+
+        Assertions.assertEquals(sendMessage, listener.updateReceived(update));
+        Assertions.assertEquals(Optional.of(owner), ownerRepository.findById(ConstTest.CHAT_ID.toString()));
 
 
     }/*
