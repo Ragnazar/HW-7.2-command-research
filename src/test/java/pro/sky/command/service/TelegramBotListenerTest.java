@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.*;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
@@ -19,7 +20,6 @@ import pro.sky.command.model.Owner;
 import pro.sky.command.repository.OwnerRepository;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static pro.sky.command.constants.BotMessageEnum.*;
@@ -34,22 +34,23 @@ class TelegramBotListenerTest {
     @Autowired
     private OwnerRepository ownerRepository;
 
+
     Update update = new Update();
     Message message = new Message();
     User user = new User();
     Chat chat = new Chat(ConstTest.CHAT_ID, "private");
     MessageEntity entity = new MessageEntity("bot_command", 0, 6);
-    List<List<InlineKeyboardButton>> keyboardMarkup = List.of(List.of(new InlineKeyboardButton("1")));
     SendMessage sendMessage = new SendMessage();
-@BeforeEach
+
+    @BeforeEach
     public void init() {
         user.setIsBot(false);
         user.setId(ConstTest.CHAT_ID);
         user.setFirstName(ConstTest.NAME);
 
+        message.setMessageId(ConstTest.MESSAGE_ID);
         message.setChat(chat);
         message.setText(ConstTest.COMMAND_START);
-        message.setEntities(Arrays.asList(entity));
         message.setFrom(user);
 
         sendMessage.setText("Привет, " + ConstTest.NAME + " приятно познакомится!" + HELP_MESSAGE.getMessage());
@@ -62,15 +63,34 @@ class TelegramBotListenerTest {
     }
 
     @Test
-    void onUpdateReceived() {
+    void onUpdateReceivedTestCommandStart() {
+        message.setEntities(Arrays.asList(entity));
         Owner owner = new Owner(ConstTest.CHAT_ID, ConstTest.NAME);
         update.setMessage(message);
 
         Assertions.assertEquals(sendMessage, listener.updateReceived(update));
         Assertions.assertEquals(Optional.of(owner), ownerRepository.findById(ConstTest.CHAT_ID.toString()));
+    }
+
+    @Test
+    void onUpdateReceivedTestButtonMainMenu() {
+
+        message.setText(ConstTest.BUTTON_MENU);
+        Owner owner = new Owner(ConstTest.CHAT_ID, ConstTest.NAME);
+        ownerRepository.save(owner);
+        update.setMessage(message);
+
+        sendMessage.setText(START.getMessage());
+        sendMessage.setReplyMarkup(InlineKeyboardMarkup.builder().keyboard(
+                Arrays.asList(Arrays.asList(
+                        InlineKeyboardButton.builder().text(CAT_SHELTER.getNameButton()).callbackData(CAT_SHELTER.name()).build()
+                        , InlineKeyboardButton.builder().text(DOG_SHELTER.getNameButton()).callbackData(DOG_SHELTER.name()).build()))).build());
+
+        Assertions.assertEquals(sendMessage, listener.updateReceived(update));
+    }
 
 
-    }/*
+    /*
 
     {
         "ok":true,
