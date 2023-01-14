@@ -7,7 +7,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import pro.sky.command.service.TelegramBotInitializer;
 import pro.sky.command.service.TelegramBotListener;
@@ -43,7 +42,5 @@ public class TgBotApplicationTests {
         bot.onUpdatesReceived(asList(update1, update2));
         Mockito.verify(bot).onUpdateReceived(update1);
         Mockito.verify(bot).onUpdateReceived(update2);
-
-
     }
 }
