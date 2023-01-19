@@ -1,6 +1,8 @@
 package pro.sky.command.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -18,6 +20,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import pro.sky.command.configuration.TelegramBotConfiguration;
 import pro.sky.command.constants.Const;
 import pro.sky.command.exception.ExecuteException;
+import pro.sky.command.model.Pet;
 import pro.sky.command.service.handler.HandlerCallbackQuery;
 import pro.sky.command.service.handler.HandlerCommand;
 import pro.sky.command.service.handler.HandlerMessages;
@@ -25,6 +28,7 @@ import pro.sky.command.service.handler.HandlerMessages;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.file.Files.createDirectories;
@@ -33,6 +37,7 @@ import static java.nio.file.Files.createDirectories;
 @Component
 @Slf4j
 @Transactional
+@EnableScheduling
 public class TelegramBotListener extends TelegramLongPollingBot {
     private final TelegramBotConfiguration configuration;
     private final HandlerCallbackQuery callbackQuery;
@@ -140,4 +145,19 @@ public class TelegramBotListener extends TelegramLongPollingBot {
             log.error("Возникла ошибка при отправке сообщения в телеграм" + e.getMessage());
         }
     }
+
+
+    @Scheduled(cron = " 0 0 12 * * *")
+    private void sendReminderReport() {
+        List<Pet> pets = reportService.checkReportData();
+        if (!pets.isEmpty()) {
+            List<SendMessage> sends = new ArrayList<>(pets.size());
+            for (Pet p : pets) {
+                sends.add(SendMessage.builder().chatId(p.getOwner().getChatId()).text(Const.ANSWER_UNCHECK_REPORT)
+                        .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMaker.reportKeyboard()).build()).build());
+            }
+            executeMessage(sends);
+        }
+    }
+
 }

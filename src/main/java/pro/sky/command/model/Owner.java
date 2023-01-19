@@ -1,15 +1,16 @@
 package pro.sky.command.model;
 
 import lombok.*;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 /**
  * Класс для добавления пользователей приюта
+ *
  * @autor Иван Авдеев
  */
 @Entity
@@ -46,7 +47,6 @@ public class Owner {
      */
     private boolean volunteerChat;
     @OneToMany(mappedBy = "owner")
-    @Column(name = "pets_id")
     @ToString.Exclude
     private List<Pet> pets;
 
@@ -56,5 +56,5 @@ public class Owner {
     }
 
     public Owner() {
-            }
+    }
 }

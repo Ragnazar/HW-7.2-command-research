@@ -5,6 +5,7 @@ import org.hibernate.annotations.Table;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
 
 /**
  * Класс ежедневного отчета для питомника о питомце со свойствами <b>photo</b>, <b>diet</b>,
@@ -32,7 +33,8 @@ public class Report {
      * Поле даты заполнения
      */
     @Column(name = "recording_date")
-    private String recordingDate;
+    @NotBlank
+    private LocalDate recordingDate;
     /**
      * Поле с фотографией питомца
      */
@@ -59,11 +61,11 @@ public class Report {
     /**
      * Поле идентификатор питомца
      */
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "pet")
     private Pet pet;
 
-    public Report(String recordingDate, Pet pet) {
+    public Report(LocalDate recordingDate, Pet pet) {
         this.recordingDate = recordingDate;
         this.pet = pet;
         this.checkReport=false;

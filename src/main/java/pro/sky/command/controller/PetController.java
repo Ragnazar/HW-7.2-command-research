@@ -3,7 +3,9 @@ package pro.sky.command.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pro.sky.command.constants.KindOfPet;
 import pro.sky.command.model.Pet;
+import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.repository.PetRepository;
 import pro.sky.command.service.PetService;
 
@@ -19,32 +21,36 @@ import java.util.Collection;
 public class PetController {
     /** Поле сервиса питомцев */
     private final PetService service;
-
     /**
      * Конструктор - создание нового объекта сервиса
-     * @see PetService#PetService(PetRepository)
+     * @see PetService#PetService(PetRepository, OwnerRepository, pro.sky.command.repository.ReportRepository)
      */
     public PetController(PetService service) {
         this.service = service;
     }
 
     /**
-     * Функция получения всех питомцев, хранящихся в базе данных {@link PetService#getAll()}
+     * Функция получения всех питомцев, хранящихся в базе данных {@link PetService#getAll(KindOfPet)}
      * @return возвращает список всех питомцев
      */
     @GetMapping(path = "all")  //GET http://localhost:8080/pet/all
-    public ResponseEntity<Collection<Pet>> findAll() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<Collection<Pet>> findAll( @RequestParam KindOfPet kind) {
+        return ResponseEntity.ok(service.getAll(kind));
     }
 
-
     /**
-     * Функция добавления нового питомца в базу данных {@link PetService#addPet(Pet)}
+     * Функция добавления нового питомца в базу данных {@link PetService#addPet(String, KindOfPet, long)} )}
      * @return возвращает объект, содержащий данные добавленного питомца
      */
     @PostMapping //POST http://localhost:8080/pet
-    public Pet addPet(@RequestBody Pet pet) {
-        return service.addPet(pet);
+    public ResponseEntity<Object> addPet(@RequestParam String name,
+                      @RequestParam KindOfPet kind, @RequestParam  long id) {
+        Pet tar = service.findPet(id);
+        if (tar != null) {
+            return new ResponseEntity<>("Питомец с таким номером сушествует. " +
+                    "Убедитесь в правильности заполнения или выберите другой запрос.", HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(service.addPet(name,kind,id));
     }
 
     /**
@@ -62,23 +68,38 @@ public class PetController {
      * @return возвращает объект, содержащий данные найденного питомца
      */
     @GetMapping(path = "{id}")   //GET http://localhost:8080/pet/{id}
-    public ResponseEntity<Pet> getPetById(@PathVariable Long id) {
+    public ResponseEntity<Object> getPetById(@PathVariable Long id) {
         Pet pet = service.findPet(id);
         if (pet == null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>("Нет питомца с таким иномером", HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(pet);
     }
 
     /**
-     * Функция изменения существующего питомца в базе данных {@link PetService#editPet(Pet)}
+     * Функция изменения существующего питомца в базе данных {@link PetService#updatePet(String, KindOfPet, Pet)}
      * @return возвращает объект, содержащий данные измененного питомца
      */
     @PutMapping  //PUT http://localhost:8080/pet/{id}
-    public ResponseEntity<Pet> updateFaculty(@RequestBody Pet pet) {
-        Pet tar = service.editPet(pet);
+    public ResponseEntity<Object> updatePet(@RequestParam(defaultValue = "  ") String name,
+                                         @RequestParam(defaultValue = "null") KindOfPet kind,
+                                         @RequestParam  long id) {
+        Pet tar = service.findPet(id);
         if (tar == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return new ResponseEntity<>("Нет питомца с таким иномером", HttpStatus.BAD_REQUEST);
+        }
+        if (tar.getOwner()!= null) {
+            return new ResponseEntity<>("Нельзя изменять питомца у которого есть хозяин." +
+                    " Если владелец не прошел испытательный срок выберите Установить владельца", HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(service.updatePet(name,kind,tar));
+    }
+    @PutMapping("/{petId}")  //PUT http://localhost:8080/pet/{petId}/{ownerId}
+    public ResponseEntity<Object> updatePetOwner(@PathVariable long petId,
+                                                     @RequestParam  Long ownerId) {
+        Pet tar = service.setOwnerToPet(petId,ownerId);
+        if (tar == null) {
+            return new ResponseEntity<>("Нет владельца или питомца с указаным номером. Уточните данные ", HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(tar);
     }

@@ -3,8 +3,13 @@ package pro.sky.command.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pro.sky.command.constants.BotMessageEnum;
+import pro.sky.command.constants.Const;
 import pro.sky.command.model.Owner;
+import pro.sky.command.model.Pet;
 import pro.sky.command.repository.OwnerRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -29,14 +34,13 @@ public class CheckedService {
     }
 
     public boolean addReportPress(long chatId, BotMessageEnum nameButton) {
-        boolean check = false;
         Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
-        if (owner != null) {
-            check = true;
-            owner.setReportButton(nameButton.name());
-            ownerRepository.save(owner);
+        if (owner == null) {
+            return false;
         }
-        return check;
+        owner.setReportButton(nameButton.name());
+        ownerRepository.save(owner);
+        return true;
     }
 
     public String checkShelterPress(long chatId) {
@@ -52,10 +56,7 @@ public class CheckedService {
         if (owner == null) {
             return false;
         }
-        if (owner.getReportButton()==null) {
-            return false;
-        }
-        return true;
+        return owner.getReportButton() != null;
     }
 
     public boolean checkVolunteerButtonPress(long chatId) {
@@ -79,5 +80,17 @@ public class CheckedService {
             owner.setShelterButton(null);
             ownerRepository.save(owner);
         }
+    }
+
+    public List<String> getReportCount(long chatId) {
+        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
+        if (owner == null || owner.getPets() == null) {
+            return null;
+        }
+        List<String> counts = new ArrayList(owner.getPets().size());
+        for (Pet p : owner.getPets()) {
+            counts.add("Питомец номер " + p.getId() + " Осталось " + (Const.TEST_PERIOD - p.getCorrectReportCount()));
+        }
+        return counts;
     }
 }
