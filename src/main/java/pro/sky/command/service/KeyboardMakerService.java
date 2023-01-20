@@ -63,7 +63,8 @@ public class KeyboardMakerService {
     }
     public List<List<InlineKeyboardButton>> reportKeyboard() {
         return Arrays.asList(Arrays.asList(getButton(PHOTO),getButton(DIET)),
-                         Arrays.asList(getButton(HEALTH),getButton(BEHAVIOR)));
+                         Arrays.asList(getButton(HEALTH),getButton(BEHAVIOR)),
+                Arrays.asList(getButton(TEST_PERIOD)));
     }
 
     InlineKeyboardButton getButton(BotMessageEnum buttonName) {

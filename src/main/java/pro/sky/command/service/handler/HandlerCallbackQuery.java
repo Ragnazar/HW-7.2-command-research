@@ -9,6 +9,8 @@ import pro.sky.command.service.CheckedService;
 import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.SendMessageService;
 
+import java.util.List;
+
 import static pro.sky.command.constants.BotMessageEnum.*;
 
 /**
@@ -127,23 +129,43 @@ public class HandlerCallbackQuery {
             case "DISABILITY_PET":
                 log.debug("вызваа команда /DISABILITY_PET");
                 return service.sendMessageWithReplaceKeyboard(chatId, DISABILITY_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+
             case "PHOTO":
                 log.debug("вызваа команда /PHOTO");
-                checkedService.addReportPress(chatId, PHOTO);
-                return service.sendMessage(chatId, PHOTO.getMessage(), keyboardMaker.reportKeyboard());
+                if (checkedService.addReportPress(chatId, PHOTO)) {
+                    return service.sendMessage(chatId, PHOTO.getMessage(), keyboardMaker.reportKeyboard());
+                }
             case "DIET":
                 log.debug("вызваа команда /DIET");
-                checkedService.addReportPress(chatId, DIET);
-                return service.sendMessage(chatId, DIET.getMessage(), keyboardMaker.reportKeyboard());
+                if (checkedService.addReportPress(chatId, DIET)) {
+                    return service.sendMessage(chatId, DIET.getMessage(), keyboardMaker.reportKeyboard());
+                }
             case "HEALTH":
                 log.debug("вызваа команда /HEALTH");
-                checkedService.addReportPress(chatId, HEALTH);
-                return service.sendMessage(chatId, HEALTH.getMessage(), keyboardMaker.reportKeyboard());
+                if (checkedService.addReportPress(chatId, HEALTH)) {
+                    return service.sendMessage(chatId, HEALTH.getMessage(), keyboardMaker.reportKeyboard());
+                }
             case "BEHAVIOR":
                 log.debug("вызваа команда /BEHAVIOR");
-                checkedService.addReportPress(chatId, BEHAVIOR);
-                return service.sendMessage(chatId, BEHAVIOR.getMessage(), keyboardMaker.reportKeyboard());
+                if (checkedService.addReportPress(chatId, BEHAVIOR)) {
+                    return service.sendMessage(chatId, BEHAVIOR.getMessage(), keyboardMaker.reportKeyboard());
+                }
 
+                return service.sendMessage(chatId,"Пользователь с таким номером не найден. Обратитесь к волантеру.", keyboardMaker.reportKeyboard());
+            case "TEST_PERIOD":
+                log.debug("вызваа команда /TEST_PERIOD");
+               List<String> count = checkedService.getReportCount(chatId);
+                if (count==null){
+                    return service.sendMessage(chatId, " Ознакомьтесь с информацией о тестовом периоде.\n   "+
+                            TEST_PERIOD.getMessage()+"\n оставшийся тестовый период не удалось получить." +
+                            " Если вы зарегистрированы и взяли питомца обратитесь к волонтерам и опишите проблему. ", keyboardMaker.reportKeyboard());
+                }
+                StringBuilder answer =new StringBuilder("\n Вам осталось прислать " );
+                for (String s:count) {
+                    answer.append(s);
+                }answer.append(" Верно заполненных и подтвержденных отчетов. Если вы обнаружили не точность сообщите волонтеру.");
+
+                return service.sendMessage(chatId, TEST_PERIOD.getMessage()+answer , keyboardMaker.reportKeyboard());
             default:
                 return service.sendMessage(chatId, "Извините, данная команда пока не поддерживается.", keyboardMaker.startKeyboard());
         }

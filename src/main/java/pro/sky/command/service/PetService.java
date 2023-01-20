@@ -1,5 +1,6 @@
 /**
  * Сервис для работы с репозиорием <b>pet</b>.
+ *
  * @autor Иван Авдеев
  * @version 0.1
  */
@@ -8,38 +9,57 @@ package pro.sky.command.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pro.sky.command.constants.Const;
+import pro.sky.command.constants.KindOfPet;
+import pro.sky.command.model.Owner;
+import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.repository.PetRepository;
 import pro.sky.command.model.Pet;
+import pro.sky.command.repository.ReportRepository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 @Service
 public class PetService {
-    /** Поле репозитория питомцев */
+    /**
+     * Поле репозитория питомцев
+     */
     private final PetRepository petRepository;
+    private final OwnerRepository ownerRepository;
+    private final ReportRepository reportRepository;
 
-    /** Поле для подключения сервиса логирования */
+    /**
+     * Поле для подключения сервиса логирования
+     */
     private static final Logger logger = LoggerFactory.getLogger(PetService.class);
 
     /**
      * Конструктор - создание нового объекта репозитория
+     *
      * @see PetService#petRepository
      */
-    public PetService(PetRepository petRepository) {
+    public PetService(PetRepository petRepository, OwnerRepository ownerRepository, ReportRepository reportRepository) {
         this.petRepository = petRepository;
+        this.ownerRepository = ownerRepository;
+        this.reportRepository = reportRepository;
     }
 
     /**
      * Функция добавления нового питомца в базу данных {@link PetRepository#save(Object)}
+     *
      * @return возвращает объект, содержащий данные добавленного питомца
      */
-    public Pet addPet(Pet pet) {
+    public Pet addPet(String name, KindOfPet kind, long id) {
         logger.info("Was invoked method for add a new pet");
+        Pet pet = petRepository.findById(id).orElse(new Pet(id, name, kind));
         return petRepository.save(pet);
     }
 
     /**
      * Функция получения питомца из базы данных по его идентификатору {@link PetRepository#findById(Object)}
+     *
      * @return возвращает объект, содержащий данные найденного питомца
      */
     public Pet findPet(long id) {
@@ -49,10 +69,38 @@ public class PetService {
 
     /**
      * Функция изменения существующего питомца в базе данных {@link PetRepository#save(Object)}
+     *
      * @return возвращает объект, содержащий данные измененного питомца
      */
-    public Pet editPet(Pet pet) {
+    public Pet updatePet(String name, KindOfPet kind, Pet pet) {
         logger.info("Was invoked method for edit pet");
+        if (!name.isBlank()) {
+            pet.setNamePet(name);
+        }
+        if (kind != null) {
+            pet.setKindOfAnimal(kind);
+        }
+        return petRepository.save(pet);
+    }
+
+    public Pet setOwnerToPet(long petId, Long ownerId) {
+        Pet pet = petRepository.findById(petId).orElse(null);
+        if (pet == null) {
+            return null;
+        }
+        if (ownerId == null) {
+            pet.setCorrectReportCount(0);
+            pet.setDateLastCorrectReport(null);
+            reportRepository.deleteAll(pet.getReports());
+        }
+
+        Owner owner = ownerRepository.findById(String.valueOf(ownerId)).orElse(null);
+        if (owner == null) {
+            return null;
+        }
+
+        pet.setOwner(owner);
+        pet.setDateLastCorrectReport(LocalDate.parse(LocalDate.now().toString(), DateTimeFormatter.ofPattern(Const.PATTERN_LOCAL_DATA)));
         return petRepository.save(pet);
     }
 
@@ -66,11 +114,12 @@ public class PetService {
 
     /**
      * Функция получения всех питомцев, хранящихся в базе данных {@link PetRepository#findAll()}
+     *
      * @return возвращает список всех питомцев
      */
-    public Collection<Pet> getAll() {
+    public Collection<Pet> getAll(KindOfPet kind) {
         logger.info("Was invoked method for get a list of all pets");
-        return petRepository.findAll();
+        return petRepository.findAllByKindOfAnimal(kind.name());
     }
 
 }

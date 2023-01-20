@@ -62,6 +62,7 @@ public class SendMessageService {
         String pathToSend = "classpath:" +path + nameShelter + "_" + name + ".jpg";
         SendPhoto sendPhoto = createSendPhoto(chatId,pathToSend);
         if (sendPhoto == null) {
+
             return sendMessage(chatId, "Возможно файл с информацией не найден. Нажмите главное меню и сообшите пожалуйста волонтеру об ошибке.", null);
         }
         if (messageToSend != null) {

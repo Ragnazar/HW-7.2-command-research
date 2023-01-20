@@ -13,6 +13,8 @@ import pro.sky.command.repository.ReportRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 /**
  * Класс для работы с таблицей отчет. Добавляет ввделенные сообщения в таблицу и возвращает сообщение.
  *
@@ -49,10 +51,12 @@ public class ReportService {
         LocalDate dateTime = LocalDate.parse(data, DateTimeFormatter.ofPattern(Const.PATTERN_LOCAL_DATA));
         Pet pet = petRepository.findById(Long.valueOf(petId)).orElse(null);
         Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
-        if (pet == null & owner == null) {
+        if (pet == null || owner == null) {
             return "Питомец с таким идентификатором не найден. Проверьте правильно ли вы ввели идентификатор. Если все верно сообщите об ошибке волонтеру.";
+        }if (!pet.getOwner().getChatId().equals(String.valueOf(chatId))){
+           return "Питомец с таким номером вам не принадлежит. Если вы правильно ввели идентификатор сообщите об ошибке волонтеру.";
         }
-        Report report = reportRepository.findByQuery(Long.valueOf(petId), data).orElse(new Report(data, pet));
+        Report report = reportRepository.findByQuery(Long.valueOf(petId), dateTime).orElse(new Report(dateTime, pet));
         if (owner.getReportButton().equals(BotMessageEnum.DIET.name())) {
             report.setDiet(text);
             answer = BotMessageEnum.DIET.getNameButton() + " за " + data + " успешно добавлен.";
@@ -69,10 +73,15 @@ public class ReportService {
             report.setPathToPhoto(text);
             answer = BotMessageEnum.PHOTO.getNameButton() + " за " + data + " успешно добавлен. ";
         }
+        owner.setReportButton(null);
+        ownerRepository.save(owner);
         reportRepository.save(report);
-        if (!checkReport(report).isEmpty()) {
-            answer = answer + " Не забудьте добавить " + checkReport(report);
+        String checkReport=checkReport(report);
+        if (!checkReport.isEmpty()) {
+            answer = answer + " Не забудьте добавить " + checkReport;
         }
+        pet.setDateLastCorrectReport(dateTime);
+        petRepository.save(pet);
         return answer;
     }
 
@@ -97,4 +106,10 @@ public class ReportService {
         }
         return answer;
     }
+
+    public List<Pet> checkReportData() {
+        LocalDate today =LocalDate.parse(LocalDate.now().toString(), DateTimeFormatter.ofPattern(Const.PATTERN_LOCAL_DATA));
+        return petRepository.findAllByDateLastCorrectReport(today.minusDays(3));
+    }
+
 }
