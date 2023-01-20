@@ -1,6 +1,16 @@
+
 package pro.sky.command.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.checkerframework.checker.fenum.qual.SwingHorizontalOrientation;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.command.constants.KindOfPet;
@@ -9,6 +19,7 @@ import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.repository.PetRepository;
 import pro.sky.command.service.PetService;
 
+import javax.persistence.Column;
 import java.util.Collection;
 /**
  * Контроллер для работы с базой данных <b>pet</b>.
@@ -19,7 +30,9 @@ import java.util.Collection;
 @RestController
 @RequestMapping("pet")
 public class PetController {
-    /** Поле сервиса питомцев */
+    /**
+     * Поле сервиса питомцев
+     */
     private final PetService service;
     /**
      * Конструктор - создание нового объекта сервиса
@@ -33,6 +46,17 @@ public class PetController {
      * Функция получения всех питомцев, хранящихся в базе данных {@link PetService#getAll(KindOfPet)}
      * @return возвращает список всех питомцев
      */
+    @Operation(summary = "Функция получения всех питомцев, хранящихся в базе данных, возвращает список всех питомцев.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Функция получения всех питомцев, хранящихся в базе данных",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    array = @ArraySchema(schema = @Schema(implementation = Collection.class))
+                            )
+                    )
+            })
     @GetMapping(path = "all")  //GET http://localhost:8080/pet/all
     public ResponseEntity<Collection<Pet>> findAll( @RequestParam KindOfPet kind) {
         return ResponseEntity.ok(service.getAll(kind));
@@ -42,6 +66,17 @@ public class PetController {
      * Функция добавления нового питомца в базу данных {@link PetService#addPet(String, KindOfPet, long)} )}
      * @return возвращает объект, содержащий данные добавленного питомца
      */
+    @Operation(summary = "Функция добавления нового питомца в базу данных, возвращает объект, содержащий данные добавленного питомца.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200")},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Добавляем питомца в базу данных",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Pet.class)
+                    )
+            ))
     @PostMapping //POST http://localhost:8080/pet
     public ResponseEntity<Object> addPet(@RequestParam String name,
                       @RequestParam KindOfPet kind, @RequestParam  long id) {
@@ -55,20 +90,46 @@ public class PetController {
 
     /**
      * Функция удаляет питомца из базы данных {@link PetService#removePet(long)}
+     *
      * @return возвращает объект,содержащий данные удаленного питомца
      */
+    @Operation(summary = "Функция удаляет питомца из базы данных, возвращает объект,содержащий данные удаленного питомца.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Функция удаляет питомца из базы данных",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Pet.class)
+                            )
+                    )
+            })
     @DeleteMapping(path = "{id}") //DELETE http://localhost:8080/pet/{id}
-    public ResponseEntity<Pet> removePet(@PathVariable Long id) {
+    public ResponseEntity<Pet> removePet(@Parameter(description = "Передаем ID питомца, подлежащего удалению") @PathVariable Long id) {
         service.removePet(id);
         return ResponseEntity.ok().build();
     }
 
     /**
      * Функция получения питомца из базы данных по его идентификатору {@link PetService#findPet(long)}
+     *
      * @return возвращает объект, содержащий данные найденного питомца
      */
+    @Operation(summary = "Функция получения питомца из базы данных по его идентификатору, возвращает объект, содержащий данные найденного питомца.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Функция получения питомца из базы данных по его идентификатору",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Pet.class)
+                            )
+                    )
+            })
     @GetMapping(path = "{id}")   //GET http://localhost:8080/pet/{id}
+
     public ResponseEntity<Object> getPetById(@PathVariable Long id) {
+
         Pet pet = service.findPet(id);
         if (pet == null) {
             return new ResponseEntity<>("Нет питомца с таким иномером", HttpStatus.BAD_REQUEST);
@@ -80,6 +141,18 @@ public class PetController {
      * Функция изменения существующего питомца в базе данных {@link PetService#updatePet(String, KindOfPet, Pet)}
      * @return возвращает объект, содержащий данные измененного питомца
      */
+    @Operation(summary = "Функция изменения существующего питомца в базе данных, возвращает объект, содержащий данные измененного питомца.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200")},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Функция изменения питомца",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Pet.class)
+                    )
+            )
+    )
     @PutMapping  //PUT http://localhost:8080/pet/{id}
     public ResponseEntity<Object> updatePet(@RequestParam(defaultValue = "  ") String name,
                                          @RequestParam(defaultValue = "null") KindOfPet kind,
