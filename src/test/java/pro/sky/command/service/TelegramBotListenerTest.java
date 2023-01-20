@@ -19,6 +19,7 @@ import pro.sky.command.constants.ConstTest;
 import pro.sky.command.model.Owner;
 import pro.sky.command.repository.OwnerRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -77,6 +78,7 @@ class TelegramBotListenerTest {
 
         message.setText(ConstTest.BUTTON_MENU);
         Owner owner = new Owner(ConstTest.CHAT_ID, ConstTest.NAME);
+        owner.setPets(new ArrayList<>());
         ownerRepository.save(owner);
         update.setMessage(message);
 

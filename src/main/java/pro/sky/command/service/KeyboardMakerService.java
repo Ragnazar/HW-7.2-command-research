@@ -23,7 +23,7 @@ public class KeyboardMakerService {
     }
 
     public List<List<InlineKeyboardButton>> startKeyboardForRegistered() {
-        return Arrays.asList(Arrays.asList(getButton(PET_REPORT)));
+        return Arrays.asList(Arrays.asList(getButton(PET_REPORT)),Arrays.asList(getButton(START)));
     }
 
     public List<List<InlineKeyboardButton>> shelterKeyboard() {

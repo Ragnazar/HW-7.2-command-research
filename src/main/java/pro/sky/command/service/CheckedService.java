@@ -2,6 +2,7 @@ package pro.sky.command.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pro.sky.command.constants.BotMessageEnum;
 import pro.sky.command.constants.Const;
 import pro.sky.command.model.Owner;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+@Transactional
 public class CheckedService {
     //для запоминания какая кнопка в каком чате нажата
 
@@ -93,4 +95,13 @@ public class CheckedService {
         }
         return counts;
     }
+
+    public Boolean isOwnerHavePet(long chatId) {
+        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
+        if (owner == null){
+            return false;
+                    }
+        return !owner.getPets().isEmpty();
+    }
 }
+
