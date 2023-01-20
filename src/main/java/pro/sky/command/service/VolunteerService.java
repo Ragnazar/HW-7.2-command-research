@@ -15,7 +15,11 @@ import pro.sky.command.repository.ReportRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+/**
+ * Класс для обработки полученных текстовых сообщений
+ *
+ * @autor Наталья Шилова
+ */
 @Service
 public class VolunteerService {
     private final NotificationRepository notificationRepository;
@@ -29,7 +33,11 @@ public class VolunteerService {
         this.petRepository = petRepository;
         this.service = service;
     }
-
+    /**
+     * Метод формирует сообщение с отчетом питомца в чат волонтеров. Создает временную запись в таблице Notification.
+     *
+     *@return возвращает лист с 6ю сообщениями в чат волонтеров.
+     */
     public Object getReport() {
         Report report = reportRepository.findAllUncheck();
         if (report == null) {
@@ -116,6 +124,7 @@ public class VolunteerService {
                     service.sendMessage(Const.VOLUNTEER_CHAT_ID, "Владелец успешно поздравлен.", null)));
         }
         if (text.compareToIgnoreCase("продлить") == 0) {
+            pet.setCorrectReportCount(pet.getCorrectReportCount() -10);
                    return new ArrayList<>(Arrays.asList(service.sendMessage(Long.valueOf(pet.getOwner().getChatId()),
                            Const.ANSWER_FAILED_TEST_PERIOD, null),
                     service.sendMessage(Const.VOLUNTEER_CHAT_ID, "Испытательный срок владельцеу питомца номер "+ petId+

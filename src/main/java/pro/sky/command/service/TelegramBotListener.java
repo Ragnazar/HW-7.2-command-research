@@ -148,7 +148,7 @@ public class TelegramBotListener extends TelegramLongPollingBot {
 
 
     @Scheduled(cron = " 0 0 12 * * *")
-    private void sendReminderReport() {
+    public void sendReminderReport() {
         List<Pet> pets = reportService.checkReportData();
         if (!pets.isEmpty()) {
             List<SendMessage> sends = new ArrayList<>(pets.size());

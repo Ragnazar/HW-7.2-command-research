@@ -9,6 +9,8 @@ import pro.sky.command.service.CheckedService;
 import pro.sky.command.service.KeyboardMakerService;
 import pro.sky.command.service.SendMessageService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static pro.sky.command.constants.BotMessageEnum.*;
@@ -53,6 +55,10 @@ public class HandlerCallbackQuery {
         long chatId = update.getCallbackQuery().getMessage().getChatId();
 
         switch (callbackData) {
+            case "START":
+                log.debug("вызваа команда /START");
+                return service.sendMessage(chatId, "вы можете посмотреть информацию о приютах ", keyboardMaker.shelterKeyboard());
+
             case "CAT_SHELTER":
 
                 log.debug("вызваа команда /CAT_SHELTER");
@@ -99,36 +105,39 @@ public class HandlerCallbackQuery {
             //Меню взять питомца
             case "RULES_SHELTER":
                 log.debug("вызваа команда /RULES_SHELTER");
-                //здесь вставить метод для отправки файла
-                return service.sendMessageWithReplaceKeyboard(chatId, RULES_SHELTER.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+                return new ArrayList<>(Arrays.asList(service.sendMessageWithReplaceKeyboard(chatId, RULES_SHELTER.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId)),
+                        service.sendPhoto(chatId, RULES_SHELTER,null, null)));
             case "DOCUMENTS":
                 log.debug("вызваа команда /DOCUMENTS");
-                //здесь вставить метод для отправки файла
-                return service.sendMessageWithReplaceKeyboard(chatId, DOCUMENTS.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+                return new ArrayList<>(Arrays.asList(service.sendMessageWithReplaceKeyboard(chatId, DOCUMENTS.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId)),
+                        service.sendPhoto(chatId, DOCUMENTS,null, null)));
             case "TRANSPORTATION":
                 log.debug("вызваа команда /TRANSPORTATION");
-                //здесь вставить метод для отправки файла
-                return service.sendMessageWithReplaceKeyboard(chatId, TRANSPORTATION.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+                return new ArrayList<>(Arrays.asList(service.sendMessageWithReplaceKeyboard(chatId, TRANSPORTATION.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId)),
+                        service.sendPhoto(chatId, TRANSPORTATION,null, null)));
             case "DOG_HANDLERS":
                 log.debug("вызваа команда /DOG_HANDLERS");
-                //здесь вставить метод для отправки файла
-                return service.sendMessageWithReplaceKeyboard(chatId, DOG_HANDLERS.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+                return new ArrayList<>(Arrays.asList(service.sendMessageWithReplaceKeyboard(chatId, DOG_HANDLERS.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId)),
+                        service.sendPhoto(chatId, DOG_HANDLERS,null, null)));
             case "REASONS_REFUSAL":
                 log.debug("вызваа команда /REASONS_REFUSAL");
-                //здесь вставить метод для отправки файла
-                return service.sendMessageWithReplaceKeyboard(chatId, REASONS_REFUSAL.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+                return new ArrayList<>(Arrays.asList(service.sendMessageWithReplaceKeyboard(chatId, REASONS_REFUSAL.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId)),
+                        service.sendPhoto(chatId, REASONS_REFUSAL, null, null)));
             case "SETTLE":
                 log.debug("вызваа команда /SETTLE");
                 return service.sendMessageWithReplaceKeyboard(chatId, SETTLE.getMessage(), messageId, keyboardMaker.settleKeyboard());
             case "LITTLE_PET":
                 log.debug("вызваа команда /LITTLE_PET");
-                return service.sendMessageWithReplaceKeyboard(chatId, LITTLE_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+                return new ArrayList<>(Arrays.asList(service.sendMessageWithReplaceKeyboard(chatId, LITTLE_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId)),
+                        service.sendPhoto(chatId, LITTLE_PET, null, null)));
             case "BIG_PET":
                 log.debug("вызваа команда /BIG_PET");
-                return service.sendMessageWithReplaceKeyboard(chatId, BIG_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+                return new ArrayList<>(Arrays.asList(service.sendMessageWithReplaceKeyboard(chatId, BIG_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId)),
+                        service.sendPhoto(chatId, BIG_PET, null, null)));
             case "DISABILITY_PET":
                 log.debug("вызваа команда /DISABILITY_PET");
-                return service.sendMessageWithReplaceKeyboard(chatId, DISABILITY_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId));
+                return new ArrayList<>(Arrays.asList(service.sendMessageWithReplaceKeyboard(chatId, DISABILITY_PET.getMessage(), messageId, keyboardMaker.takePetKeyboard(chatId)),
+                        service.sendPhoto(chatId, DISABILITY_PET, null, null)));
 
             case "PHOTO":
                 log.debug("вызваа команда /PHOTO");
@@ -151,21 +160,22 @@ public class HandlerCallbackQuery {
                     return service.sendMessage(chatId, BEHAVIOR.getMessage(), keyboardMaker.reportKeyboard());
                 }
 
-                return service.sendMessage(chatId,"Пользователь с таким номером не найден. Обратитесь к волантеру.", keyboardMaker.reportKeyboard());
+                return service.sendMessage(chatId, "Пользователь с таким номером не найден. Обратитесь к волантеру.", keyboardMaker.reportKeyboard());
             case "TEST_PERIOD":
                 log.debug("вызваа команда /TEST_PERIOD");
-               List<String> count = checkedService.getReportCount(chatId);
-                if (count==null){
-                    return service.sendMessage(chatId, " Ознакомьтесь с информацией о тестовом периоде.\n   "+
-                            TEST_PERIOD.getMessage()+"\n оставшийся тестовый период не удалось получить." +
+                List<String> count = checkedService.getReportCount(chatId);
+                if (count == null) {
+                    return service.sendMessage(chatId, " Ознакомьтесь с информацией о тестовом периоде.\n   " +
+                            TEST_PERIOD.getMessage() + "\n оставшийся тестовый период не удалось получить." +
                             " Если вы зарегистрированы и взяли питомца обратитесь к волонтерам и опишите проблему. ", keyboardMaker.reportKeyboard());
                 }
-                StringBuilder answer =new StringBuilder("\n Вам осталось прислать " );
-                for (String s:count) {
+                StringBuilder answer = new StringBuilder("\n Вам осталось прислать ");
+                for (String s : count) {
                     answer.append(s);
-                }answer.append(" Верно заполненных и подтвержденных отчетов. Если вы обнаружили не точность сообщите волонтеру.");
+                }
+                answer.append(" Верно заполненных и подтвержденных отчетов. Если вы обнаружили не точность сообщите волонтеру.");
 
-                return service.sendMessage(chatId, TEST_PERIOD.getMessage()+answer , keyboardMaker.reportKeyboard());
+                return service.sendMessage(chatId, TEST_PERIOD.getMessage() + answer, keyboardMaker.reportKeyboard());
             default:
                 return service.sendMessage(chatId, "Извините, данная команда пока не поддерживается.", keyboardMaker.startKeyboard());
         }
