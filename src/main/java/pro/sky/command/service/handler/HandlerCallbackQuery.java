@@ -164,12 +164,12 @@ public class HandlerCallbackQuery {
             case "TEST_PERIOD":
                 log.debug("вызваа команда /TEST_PERIOD");
                 List<String> count = checkedService.getReportCount(chatId);
-                if (count == null) {
+                if (count.isEmpty()) {
                     return service.sendMessage(chatId, " Ознакомьтесь с информацией о тестовом периоде.\n   " +
                             TEST_PERIOD.getMessage() + "\n оставшийся тестовый период не удалось получить." +
                             " Если вы зарегистрированы и взяли питомца обратитесь к волонтерам и опишите проблему. ", keyboardMaker.reportKeyboard());
                 }
-                StringBuilder answer = new StringBuilder("\n Вам осталось прислать ");
+                StringBuilder answer = new StringBuilder("\n\n Вам нужно прислать для ");
                 for (String s : count) {
                     answer.append(s);
                 }

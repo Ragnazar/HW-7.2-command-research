@@ -7,8 +7,6 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.checkerframework.checker.fenum.qual.SwingHorizontalOrientation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +17,6 @@ import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.repository.PetRepository;
 import pro.sky.command.service.PetService;
 
-import javax.persistence.Column;
 import java.util.Collection;
 /**
  * Контроллер для работы с базой данных <b>pet</b>.
@@ -36,7 +33,7 @@ public class PetController {
     private final PetService service;
     /**
      * Конструктор - создание нового объекта сервиса
-     * @see PetService#PetService(PetRepository, OwnerRepository, pro.sky.command.repository.ReportRepository)
+     * @see PetService#PetService(PetRepository, OwnerRepository)
      */
     public PetController(PetService service) {
         this.service = service;
@@ -167,9 +164,20 @@ public class PetController {
         }
         return ResponseEntity.ok(service.updatePet(name,kind,tar));
     }
+    @Operation(summary = "Функция изменения владельца питомца.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200")},
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Изменяем владельца",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Pet.class)
+                    )
+            ))
     @PutMapping("/{petId}")  //PUT http://localhost:8080/pet/{petId}/{ownerId}
     public ResponseEntity<Object> updatePetOwner(@PathVariable long petId,
-                                                     @RequestParam  Long ownerId) {
+                                                     @RequestParam (defaultValue = "0")  Long ownerId) {
         Pet tar = service.setOwnerToPet(petId,ownerId);
         if (tar == null) {
             return new ResponseEntity<>("Нет владельца или питомца с указаным номером. Уточните данные ", HttpStatus.BAD_REQUEST);

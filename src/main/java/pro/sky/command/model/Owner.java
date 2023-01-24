@@ -1,5 +1,6 @@
 package pro.sky.command.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.Column;
@@ -15,6 +16,7 @@ import java.util.List;
  */
 @Entity
 @Data
+@NoArgsConstructor
 public class Owner {
     /**
      * Поле идентификатор владельца
@@ -37,24 +39,25 @@ public class Owner {
     /**
      * Поле для определения к какому приюту относится владелец
      */
+    @JsonIgnore
     private String shelterButton;
     /**
      * Поле для определения того, что из отчета хочет послать владелец питомца
      */
+    @JsonIgnore
     private String reportButton;
     /**
      * Поле индикатор. Показывает что пользователь запросил помощь волонтера
      */
+    @JsonIgnore
     private boolean volunteerChat;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "owner")
-    @ToString.Exclude
-    private List<Pet> pets;
+      private List<Pet> pets;
 
     public Owner(Long chatId, String name) {
         this.chatId = chatId.toString();
         this.name = name;
-    }
-
-    public Owner() {
     }
 }

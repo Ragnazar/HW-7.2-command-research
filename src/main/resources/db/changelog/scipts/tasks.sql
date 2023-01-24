@@ -9,8 +9,8 @@ CREATE TABLE Owner
     phone_number  TEXT,
     shelterButton TEXT,
     reportButton  TEXT,
-    volunteerChat BOOLEAN NOT NULL,
-    CONSTRAINT pk_owner PRIMARY KEY (chatId)
+    volunteerChat BOOLEAN NOT NULL
+
 );
 
 -- changeset dlukin:2
@@ -19,8 +19,8 @@ CREATE TABLE pet
     id       BIGINT       NOT NULL,
     name_pet TEXT NOT NULL,
     owner_id TEXT,
-    kind     TEXT NOT NULL,
-    CONSTRAINT pk_pets PRIMARY KEY (id )
+    kind     TEXT NOT NULL
+
 );
 
 -- changeset iavdeyev:3
@@ -49,7 +49,5 @@ ALTER TABLE report
     ADD check_report BOOLEAN;
 ALTER TABLE pet
     ADD correct_report_count INTEGER;
-ALTER TABLE pet
-    ALTER COLUMN owner_id SET DEFAULT 'null';
 ALTER TABLE pet
     ADD date_last_correct_report DATE;

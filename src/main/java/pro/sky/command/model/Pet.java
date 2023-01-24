@@ -1,8 +1,9 @@
 package pro.sky.command.model;
 
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.NonNull;
 import org.hibernate.annotations.Table;
 import pro.sky.command.constants.KindOfPet;
 
@@ -13,11 +14,10 @@ import java.util.List;
 
 @Entity
 @Table(appliesTo = "pet")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class Pet {
-    public Pet(Long id, String namePet, KindOfPet kindOfAnimal) {
+    public Pet(@NonNull Long id, String namePet, KindOfPet kindOfAnimal) {
         this.id = id;
         this.namePet = namePet;
         this.kindOfAnimal = kindOfAnimal.toString();
@@ -27,8 +27,8 @@ public class Pet {
     /**
      * Поле идентификатор питомца
      */
-    @javax.persistence.Id
-    @NotBlank
+    @Id
+  @NonNull
     private Long id;
     /**
      * Поле имя питомца
@@ -40,6 +40,7 @@ public class Pet {
     /**
      * Поле идентификатор принадлежности к определенному владельцу
      */
+
     @JoinColumn(name = "owner_id")
     @ManyToOne
     private Owner owner;
@@ -47,7 +48,7 @@ public class Pet {
      * Поле вид питомца (кошка, собака)
      */
     @Column(name = "kind")
-    @NotBlank
+   @NonNull
     private String kindOfAnimal;
     /**
      * Поле счетчик колличества правильно оформленных отчетов.
@@ -63,6 +64,7 @@ public class Pet {
     /**
      * Поле идентификатор идентификатор отчета о питомце из таблицы report
      */
+    @JsonManagedReference
     @OneToMany(mappedBy = "pet")
     private List<Report> reports;
 
@@ -75,7 +77,7 @@ public class Pet {
         return getClass().getSimpleName() + "(" +
                 "id = " + id + ", " +
                 "namePet = " + namePet + ", " +
-                "owner = " + owner + ", " +
+                "owner = "+owner+", " +
                 "kindOfAnimal = " + kindOfAnimal + ")";
     }
 }

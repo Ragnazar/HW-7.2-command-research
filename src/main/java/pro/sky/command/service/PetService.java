@@ -6,6 +6,7 @@
  */
 package pro.sky.command.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,6 @@ import pro.sky.command.model.Owner;
 import pro.sky.command.repository.OwnerRepository;
 import pro.sky.command.repository.PetRepository;
 import pro.sky.command.model.Pet;
-import pro.sky.command.repository.ReportRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +28,6 @@ public class PetService {
      */
     private final PetRepository petRepository;
     private final OwnerRepository ownerRepository;
-    private final ReportRepository reportRepository;
 
     /**
      * Поле для подключения сервиса логирования
@@ -40,10 +39,9 @@ public class PetService {
      *
      * @see PetService#petRepository
      */
-    public PetService(PetRepository petRepository, OwnerRepository ownerRepository, ReportRepository reportRepository) {
+    public PetService(PetRepository petRepository, OwnerRepository ownerRepository) {
         this.petRepository = petRepository;
         this.ownerRepository = ownerRepository;
-        this.reportRepository = reportRepository;
     }
 
     /**
@@ -74,7 +72,7 @@ public class PetService {
      */
     public Pet updatePet(String name, KindOfPet kind, Pet pet) {
         logger.info("Was invoked method for edit pet");
-        if (!name.isBlank()) {
+        if (StringUtils.isBlank(name)) {
             pet.setNamePet(name);
         }
         if (kind != null) {
@@ -88,19 +86,18 @@ public class PetService {
         if (pet == null) {
             return null;
         }
-        if (ownerId == null) {
+        if (ownerId == 0) {
             pet.setCorrectReportCount(0);
             pet.setDateLastCorrectReport(null);
-            reportRepository.deleteAll(pet.getReports());
+            pet.setOwner(null);
+        } else {
+            Owner owner = ownerRepository.findById(String.valueOf(ownerId)).orElse(null);
+            if (owner == null) {
+                return null;
+            }
+            pet.setDateLastCorrectReport(LocalDate.parse(LocalDate.now().toString(), DateTimeFormatter.ofPattern(Const.PATTERN_LOCAL_DATA)));
+            pet.setOwner(owner);
         }
-
-        Owner owner = ownerRepository.findById(String.valueOf(ownerId)).orElse(null);
-        if (owner == null) {
-            return null;
-        }
-
-        pet.setOwner(owner);
-        pet.setDateLastCorrectReport(LocalDate.parse(LocalDate.now().toString(), DateTimeFormatter.ofPattern(Const.PATTERN_LOCAL_DATA)));
         return petRepository.save(pet);
     }
 
