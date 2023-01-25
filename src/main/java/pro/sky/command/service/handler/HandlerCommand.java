@@ -113,19 +113,24 @@ public class HandlerCommand {
      * @param name   Имя пользователя
      * @return возвращает строку которая будет отправлена пользователю.
      */
-    private SendMessage startCommand(Long chatId, String name) {
+    private Object startCommand(Long chatId, String name) {
         log.debug("вызван приветственный блок кода после команды старт");
 
         String answer = "Привет, " + name + " приятно познакомится!" + HELP_MESSAGE.getMessage();
         if (ownerRepository.findById(chatId.toString()).isEmpty()) {
             registerUser(chatId, name);
         } else if (!petRepository.findAllByOwner(chatId.toString()).isEmpty()) {
-            return service.sendMessage(chatId, " Привет! Чем я смогу помочь", keyboardMaker.startKeyboardForRegistered());
+            return Arrays.asList(SendMessage.builder().chatId(chatId).text("Привет! "+name)
+                    .replyMarkup(ReplyKeyboardMarkup.builder().keyboard(Arrays.asList(new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(START.getNameButton()).build(),
+                                            (KeyboardButton.builder().text(CALL_VOLUNTEER.getNameButton()).build())))
+                                    ,new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(USER_INFO.getNameButton()).build()))))
+                            .resizeKeyboard(true).oneTimeKeyboard(false).build()).build(),
+                    service.sendMessage(chatId, " Чем я смогу помочь", keyboardMaker.startKeyboardForRegistered()));
         }
         return SendMessage.builder().chatId(chatId).text(answer)
-                .replyMarkup(ReplyKeyboardMarkup.builder()
-                        .keyboardRow(new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(START.getNameButton()).build(),
-                                (KeyboardButton.builder().text(CALL_VOLUNTEER.getNameButton()).build()))))
+                .replyMarkup(ReplyKeyboardMarkup.builder().keyboard(Arrays.asList(new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(START.getNameButton()).build(),
+                                (KeyboardButton.builder().text(CALL_VOLUNTEER.getNameButton()).build())))
+                                ,new KeyboardRow(Arrays.asList(KeyboardButton.builder().text(USER_INFO.getNameButton()).build()))))
                         .resizeKeyboard(true).oneTimeKeyboard(false).build()).build();
     }
 

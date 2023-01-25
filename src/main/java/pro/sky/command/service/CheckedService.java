@@ -75,12 +75,12 @@ public class CheckedService {
     public List<String> getReportCount(long chatId) {
 
         return ownerRepository.findById(String.valueOf(chatId)).map(Owner::getPets).map(pets -> pets.stream()
-                        .map(pet -> "Питомец номер " + pet.getId() + "  -   " + (Const.TEST_PERIOD - pet.getCorrectReportCount()) + "\n    ").collect(Collectors.toList()))
+                        .map(pet -> "\n  Питомец номер " + pet.getId() + "  -   " + (Const.TEST_PERIOD - pet.getCorrectReportCount()) + " отчетов\n    ").collect(Collectors.toList()))
                 .orElse(null);
     }
 
     public Boolean isOwnerHavePet(long chatId) {
-        return ownerRepository.findById(String.valueOf(chatId)).map(Owner::getPets).isPresent();
+        return ownerRepository.findById(String.valueOf(chatId)).filter(owner -> !owner.getPets().isEmpty()).isEmpty();
     }
 }
 

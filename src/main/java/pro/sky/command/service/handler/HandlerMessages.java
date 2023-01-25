@@ -10,6 +10,8 @@ import pro.sky.command.repository.NotificationRepository;
 import pro.sky.command.service.*;
 
 
+import java.util.List;
+
 import static pro.sky.command.constants.BotMessageEnum.*;
 
 /**
@@ -54,10 +56,21 @@ public class HandlerMessages {
 
         if (text.equals(START.getNameButton())) {
             checkedService.clearPressButton(chatId);
-            if (checkedService.isOwnerHavePet(chatId)) {
+            if (!checkedService.isOwnerHavePet(chatId)) {
                 return service.sendMessage(chatId, "Вы можете отправить отчет о питомце или посмотреть информацию о приютах", keyboardMaker.startKeyboardForRegistered());
             }
             return service.sendMessage(chatId, START.getMessage(), keyboardMaker.startKeyboard());
+        }
+        if (text.equals(USER_INFO.getNameButton())) {
+            StringBuilder answer = new StringBuilder(USER_INFO.getMessage() + "  ");
+            answer.append(" Ваш идентификатор ").append(chatId).append(" \n ");
+            List<String> count = checkedService.getReportCount(chatId);
+            if (!count.isEmpty()) {
+                for (String s : count) {
+                    answer.append(s).append(" осталось заполнить");
+                }
+            }
+            return service.sendMessage(chatId, answer.toString(), null);
         }
 
         if (text.equals(CALL_VOLUNTEER.getNameButton())) {

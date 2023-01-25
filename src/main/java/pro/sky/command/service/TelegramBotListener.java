@@ -96,7 +96,7 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                     for (PhotoSize photoSize : update.getMessage().getPhoto()) {
                         i++;
                         GetFile getFile = new GetFile(photoSize.getFileId());
-                        Path filePath = Path.of(configuration.getReportPhotoPath(), "отчет" + dataReport + ".jpg");
+                        Path filePath = Path.of(configuration.getReportPhotoPath(), "Питомец"+petId+"отчет" + dataReport + ".jpg");
                         try {
                             File file = execute(getFile);
                             byte[] fileToByte = Files.readAllBytes(downloadFile(file).toPath());
@@ -146,7 +146,7 @@ public class TelegramBotListener extends TelegramLongPollingBot {
     }
 
 
-    @Scheduled(cron = " 0 44 * * * *")
+    @Scheduled(cron = " 0 05 13 * * *")
     public void sendReminderReport() {
         List<Pet> pets = reportService.checkReportData();
         if (!pets.isEmpty()) {
