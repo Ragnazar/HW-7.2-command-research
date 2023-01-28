@@ -10,9 +10,7 @@ import javax.persistence.Entity;
  * @autor Наталья Шилова
  */
 @Entity
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
 public class Notification {
     /**

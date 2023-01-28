@@ -6,11 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import pro.sky.command.constants.BotMessageEnum;
 import pro.sky.command.constants.Const;
 import pro.sky.command.model.Owner;
-import pro.sky.command.model.Pet;
 import pro.sky.command.repository.OwnerRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,27 +45,16 @@ public class CheckedService {
     }
 
     public String checkShelterPress(long chatId) {
-        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
-        if (owner != null) {
-            return owner.getShelterButton();
-        }
-        return "";
+        return ownerRepository.findById(String.valueOf(chatId)).map(Owner::getShelterButton).orElse("");
     }
 
     public boolean checkReportPress(long chatId) {
-        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
-        if (owner == null) {
-            return false;
-        }
-        return owner.getReportButton() != null;
+        return ownerRepository.findById(String.valueOf(chatId)).map(Owner::getReportButton).isPresent();
     }
 
     public boolean checkVolunteerButtonPress(long chatId) {
-        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
-        if (owner != null) {
-            return owner.isVolunteerChat();
-        }
-        return false;
+
+        return ownerRepository.findById(String.valueOf(chatId)).map(Owner::isVolunteerChat).orElse(false);
     }
 
     public void addVolunteerButtonPress(long chatId, boolean b) {
@@ -85,23 +73,14 @@ public class CheckedService {
     }
 
     public List<String> getReportCount(long chatId) {
-        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
-        if (owner == null || owner.getPets() == null) {
-            return null;
-        }
-        List<String> counts = new ArrayList(owner.getPets().size());
-        for (Pet p : owner.getPets()) {
-            counts.add("Питомец номер " + p.getId() + " Осталось " + (Const.TEST_PERIOD - p.getCorrectReportCount()));
-        }
-        return counts;
+
+        return ownerRepository.findById(String.valueOf(chatId)).map(Owner::getPets).map(pets -> pets.stream()
+                        .map(pet -> "\n  Питомец номер " + pet.getId() + "  -   " + (Const.TEST_PERIOD - pet.getCorrectReportCount()) + " отчетов\n    ").collect(Collectors.toList()))
+                .orElse(null);
     }
 
     public Boolean isOwnerHavePet(long chatId) {
-        Owner owner = ownerRepository.findById(String.valueOf(chatId)).orElse(null);
-        if (owner == null){
-            return false;
-                    }
-        return !owner.getPets().isEmpty();
+        return ownerRepository.findById(String.valueOf(chatId)).filter(owner -> !owner.getPets().isEmpty()).isEmpty();
     }
 }
 

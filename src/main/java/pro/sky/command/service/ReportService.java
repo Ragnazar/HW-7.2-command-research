@@ -57,19 +57,19 @@ public class ReportService {
            return "Питомец с таким номером вам не принадлежит. Если вы правильно ввели идентификатор сообщите об ошибке волонтеру.";
         }
         Report report = reportRepository.findByQuery(Long.valueOf(petId), dateTime).orElse(new Report(dateTime, pet));
-        if (owner.getReportButton().equals(BotMessageEnum.DIET.name())) {
+        if (BotMessageEnum.DIET.name().equals(owner.getReportButton())) {
             report.setDiet(text);
             answer = BotMessageEnum.DIET.getNameButton() + " за " + data + " успешно добавлен.";
         }
-        if (owner.getReportButton().equals(BotMessageEnum.HEALTH.name())) {
+        if (BotMessageEnum.HEALTH.name().equals(owner.getReportButton()))  {
             report.setStateOfHealth(text);
             answer = BotMessageEnum.HEALTH.getNameButton() + " за " + data + " успешно добавлен";
         }
-        if (owner.getReportButton().equals(BotMessageEnum.BEHAVIOR.name())) {
+        if (BotMessageEnum.BEHAVIOR.name().equals(owner.getReportButton()))  {
             report.setBehaviorChanges(text);
             answer = BotMessageEnum.BEHAVIOR.getNameButton() + " за " + data + " успешно добавлен. ";
         }
-        if (owner.getReportButton().equals(BotMessageEnum.PHOTO.name())){
+        if (BotMessageEnum.PHOTO.name().equals(owner.getReportButton())) {
             report.setPathToPhoto(text);
             answer = BotMessageEnum.PHOTO.getNameButton() + " за " + data + " успешно добавлен. ";
         }

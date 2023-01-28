@@ -23,7 +23,9 @@ public class KeyboardMakerService {
     }
 
     public List<List<InlineKeyboardButton>> startKeyboardForRegistered() {
-        return Arrays.asList(Arrays.asList(getButton(PET_REPORT)),Arrays.asList(getButton(START)));
+        InlineKeyboardButton startButton = getButton(START);
+        startButton.setText("Основное инфо меню");
+        return Arrays.asList(Arrays.asList(getButton(PET_REPORT)),Arrays.asList(startButton));
     }
 
     public List<List<InlineKeyboardButton>> shelterKeyboard() {

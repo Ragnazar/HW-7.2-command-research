@@ -26,6 +26,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
      */
     @Query(value = "SELECT r.* FROM report r inner join pet p on r.pet=p.id where r.pet=:pet and r.recording_date=:data", nativeQuery = true)
     Optional<Report> findByQuery(Long pet, LocalDate data);
-    @Query(value = "select r.*  from report r where r.check_report = null limit 1", nativeQuery = true)
+    @Query(value = "select r.*  from report r where r.check_report is null limit 1", nativeQuery = true)
    Report findAllUncheck();
 }

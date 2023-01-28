@@ -1,10 +1,10 @@
 package pro.sky.command.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.hibernate.annotations.Table;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 /**
@@ -16,11 +16,8 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(appliesTo = "report")
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
-
 public class Report {
 
     /**
@@ -33,7 +30,7 @@ public class Report {
      * Поле даты заполнения
      */
     @Column(name = "recording_date")
-    @NotBlank
+@NonNull
     private LocalDate recordingDate;
     /**
      * Поле с фотографией питомца
@@ -61,14 +58,15 @@ public class Report {
     /**
      * Поле идентификатор питомца
      */
+    @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "pet")
     private Pet pet;
 
-    public Report(LocalDate recordingDate, Pet pet) {
+    public Report(@NonNull LocalDate recordingDate, Pet pet) {
         this.recordingDate = recordingDate;
         this.pet = pet;
-        this.checkReport=false;
+        this.checkReport=null;
     }
 
 }

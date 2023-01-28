@@ -22,7 +22,7 @@ public interface PetRepository extends JpaRepository<Pet,Long> {
     @Query(value = "SELECT p.* from pet p where p.kind=:kind",nativeQuery = true)
     List<Pet> findAllByKindOfAnimal(String kind);
 
-    @Query(value = "SELECT p.* from pet p where p.date_last_correct_report=:date",nativeQuery = true)
+    @Query(value = "SELECT p.* from pet p where p.date_last_correct_report<:date",nativeQuery = true)
     List<Pet> findAllByDateLastCorrectReport(LocalDate date);
 
     @Query(value = "SELECT p.* from pet p where p.correct_report_count=:count",nativeQuery = true)

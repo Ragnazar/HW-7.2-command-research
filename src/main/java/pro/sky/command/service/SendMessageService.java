@@ -1,6 +1,7 @@
 package pro.sky.command.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -19,7 +20,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class SendMessageService {
-    @Value("staticFiles/images/")
+    @Value("${shelter.info.dir.path}")
     private String path;
     private final CheckedService checkedService;
 
@@ -56,7 +57,7 @@ public class SendMessageService {
     public Object sendPhoto(Long chatId, BotMessageEnum name, String messageToSend, List<List<InlineKeyboardButton>> keyboardMarkup) {
         log.debug("вызван блок для создания исходящего сообщения image");
         String nameShelter = checkedService.checkShelterPress(chatId);
-        if (nameShelter.equals("")) {
+        if (StringUtils.isBlank(nameShelter)) {
             return sendMessage(chatId, "Вы не выбрали приют по которому хотите получить информацию. Нажмите главное меню и выберите приют", null);
         }
         String pathToSend = "classpath:" +path + nameShelter + "_" + name + ".jpg";

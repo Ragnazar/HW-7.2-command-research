@@ -6,10 +6,11 @@ import org.telegram.telegrambots.meta.api.methods.CopyMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import pro.sky.command.constants.Const;
 import pro.sky.command.model.Notification;
-import pro.sky.command.model.Owner;
 import pro.sky.command.repository.NotificationRepository;
 import pro.sky.command.service.*;
 
+
+import java.util.List;
 
 import static pro.sky.command.constants.BotMessageEnum.*;
 
@@ -55,18 +56,32 @@ public class HandlerMessages {
 
         if (text.equals(START.getNameButton())) {
             checkedService.clearPressButton(chatId);
-            if (checkedService.isOwnerHavePet(chatId)) {
+            if (!checkedService.isOwnerHavePet(chatId)) {
                 return service.sendMessage(chatId, "Вы можете отправить отчет о питомце или посмотреть информацию о приютах", keyboardMaker.startKeyboardForRegistered());
             }
             return service.sendMessage(chatId, START.getMessage(), keyboardMaker.startKeyboard());
+        }
+        if (text.equals(USER_INFO.getNameButton())) {
+            StringBuilder answer = new StringBuilder(USER_INFO.getMessage() + "  ");
+            answer.append(" Ваш идентификатор ").append(chatId).append(" \n ");
+            List<String> count = checkedService.getReportCount(chatId);
+            if (!count.isEmpty()) {
+                for (String s : count) {
+                    answer.append(s).append(" осталось заполнить");
+                }
+            }
+            return service.sendMessage(chatId, answer.toString(), null);
         }
 
         if (text.equals(CALL_VOLUNTEER.getNameButton())) {
             checkedService.addVolunteerButtonPress(chatId, true);
             return service.sendMessage(chatId, CALL_VOLUNTEER.getMessage(), null);
         }
-        if (text.compareToIgnoreCase("подтверждено") == 0 || text.compareToIgnoreCase("отклонено") == 0 ||
-                text.compareToIgnoreCase("поздравить") == 0 || text.compareToIgnoreCase("продлить") == 0) {
+        if (message.getReplyToMessage() != null &&
+                (text.equalsIgnoreCase("подтверждено") ||
+                        text.equalsIgnoreCase("отклонено") ||
+                        text.equalsIgnoreCase("поздравить") ||
+                        text.equalsIgnoreCase("продлить"))) {
             String notificationText = message.getReplyToMessage().getText();
             Notification notification = notificationRepository.findByText(notificationText);
 
@@ -115,7 +130,7 @@ public class HandlerMessages {
             notificationRepository.save(new Notification(chatId, text, messageId));
             return service.sendMessage(Const.VOLUNTEER_CHAT_ID, text, null);
         }
-        if (chatId.equals(Const.VOLUNTEER_CHAT_ID)) {
+        if (message.getReplyToMessage() != null && chatId.equals(Const.VOLUNTEER_CHAT_ID)) {
             String textNotification = message.getReplyToMessage().getText();
             Notification notification = notificationRepository.findByText(textNotification);
             if (notification != null) {
@@ -130,7 +145,7 @@ public class HandlerMessages {
             }
         }
 
-        return service.sendMessage(chatId, " \"подтверждено\" или \"отклонено\"Бот понимает сообщения только в определенном формате." +
+        return service.sendMessage(chatId, " Бот понимает сообщения только в определенном формате." +
                 " При нажатии кнопки, вы можете посмотреть, что от вас ожидает бот. Начните с нажатия кнопки главное меню.", null);
     }
 }

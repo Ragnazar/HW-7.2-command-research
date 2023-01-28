@@ -1,7 +1,6 @@
 package pro.sky.command.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +36,6 @@ import static java.nio.file.Files.createDirectories;
 @Component
 @Slf4j
 @Transactional
-@EnableScheduling
 public class TelegramBotListener extends TelegramLongPollingBot {
     private final TelegramBotConfiguration configuration;
     private final HandlerCallbackQuery callbackQuery;
@@ -81,11 +79,12 @@ public class TelegramBotListener extends TelegramLongPollingBot {
             } else if (message.hasText()) {
                 return handlerMessages.handleText(message);
             } else if (message.hasPhoto()) {
+
                 String text = message.getCaption();
                 long chatId = message.getChatId();
-                String petId = null;
+                String petId = " ";
                 int firstDelimiter = text.indexOf(' ');
-                String dataReport = null;
+                String dataReport =" ";
                 if (firstDelimiter > 0) {
                     dataReport = text.substring(0, firstDelimiter);
                     petId = text.substring(firstDelimiter + 1);
@@ -97,7 +96,7 @@ public class TelegramBotListener extends TelegramLongPollingBot {
                     for (PhotoSize photoSize : update.getMessage().getPhoto()) {
                         i++;
                         GetFile getFile = new GetFile(photoSize.getFileId());
-                        Path filePath = Path.of(configuration.getReportPhotoPath(), "отчет" + dataReport + ".jpg");
+                        Path filePath = Path.of(configuration.getReportPhotoPath(), "Питомец"+petId+"отчет" + dataReport + ".jpg");
                         try {
                             File file = execute(getFile);
                             byte[] fileToByte = Files.readAllBytes(downloadFile(file).toPath());
@@ -147,13 +146,14 @@ public class TelegramBotListener extends TelegramLongPollingBot {
     }
 
 
-    @Scheduled(cron = " 0 0 12 * * *")
+    @Scheduled(cron = " 0 05 13 * * *")
     public void sendReminderReport() {
         List<Pet> pets = reportService.checkReportData();
         if (!pets.isEmpty()) {
             List<SendMessage> sends = new ArrayList<>(pets.size());
             for (Pet p : pets) {
-                sends.add(SendMessage.builder().chatId(p.getOwner().getChatId()).text(Const.ANSWER_UNCHECK_REPORT)
+                sends.add(SendMessage.builder().chatId(p.getOwner().getChatId()).text("Ваш питомец номер "+p.getId()+"    "+
+                                Const.ANSWER_UNCHECK_REPORT)
                         .replyMarkup(InlineKeyboardMarkup.builder().keyboard(keyboardMaker.reportKeyboard()).build()).build());
             }
             executeMessage(sends);
